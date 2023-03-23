@@ -1,8 +1,15 @@
 <template>
-  <nav>
+  <!-- <nav>
     <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+    <router-link to="/about">About</router-link> |
+    <router-link to="/login">Login</router-link>
+  </nav> -->
+  <!-- <div class="common-layout">
+    <el-container>
+      <el-aside width="200px">Aside</el-aside>
+      <el-main>Main</el-main>
+    </el-container>
+  </div> -->
   <router-view/>
 </template>
 
