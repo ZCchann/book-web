@@ -41,8 +41,9 @@ export default {
                             console.log(data.jwt)
                             this.$router.push({ name: 'home' })
                         })
-                        .catch(() => {
-                            this.errMsg = '用户名或密码错误！'
+                        .catch(data => {
+                            console.log(data.response.status)
+                            this.errMsg = data.response.data
                         })
                 }
             })

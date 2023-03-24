@@ -15,6 +15,11 @@
             </template>
         </el-table-column>
     </el-table>
+    <div class="demo-pagination-block">
+        <el-pagination background v-model:current-page="currentpage" v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]" :background="background" layout="total, sizes, prev, pager, next, jumper"
+            :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    </div>
 </template>
 
 <script>
@@ -25,13 +30,18 @@ export default {
     name: "getbook",
     data() {
         return {
-            tableData: []
+            tableData: [],
+            page: 1,
+            currentpage: 1,
+            pageSize: 10,
+            total: 0
         }
     },
     methods: {
-        getData() {
-            getalldata().then(data => {
+        getData(page, pageSize) {
+            getalldata(page, pageSize).then(data => {
                 this.tableData = data.data
+                this.total = data.total
             })
         },
         handleDelete(row) {
@@ -43,36 +53,47 @@ export default {
                     cancelButtonText: 'Cancel',
                     type: 'warning',
                 }
-            )
-                .then(() => {
-                    var msa = ""
-                    console.log(row["isbn"] + "1")
-                    deldata(row["isbn"] + "1").then(ret => {this.msa = ret.message})
-                    if (msa = "success") {
-                        ElMessage({
-                        type: 'success',
-                        message: 'Delete completed',
-                    })
-                    }else{
-                        ElMessage({
-                        type: 'error',
-                        message: msa,
-                    })
-                    }
-                    
+            ).then(() => {
+                deldata(row["isbn"])
+                ElMessage({
+                    type: 'success',
+                    message: 'Delete completed',
                 })
+                this.total =this.total -1 //用于触发页面刷新
+            })
                 .catch(() => {
                     ElMessage({
                         type: 'info',
                         message: 'Delete canceled',
                     })
                 })
+        },
+        
+        // 点击页码触发事件
+        handleCurrentChange(val) {
+            this.page = val
+        },
+        // 更改每页显示数量触发事件
+        handleSizeChange(val) {
+            this.pageSize = val
         }
 
     },
     mounted() {
-        this.getData()
+        this.getData(this.page, this.pageSize)
+    },
+    watch: {
+        page() {
+            this.getData(this.page, this.pageSize)
+        },
+        pageSize() {
+            this.getData(this.page, this.pageSize)
+        },
+        total() {
+            this.getData(this.page, this.pageSize)
+        }
     }
+
 
 }
 </script>

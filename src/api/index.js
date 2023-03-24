@@ -8,8 +8,12 @@ export const login = ({ username, password }) => {
     return http.post('/login', { username, password })
 }
 
-export const getalldata = params => {
-    return http.get('/book/getAllData')
+export const getalldata = (page,pagesize) => {
+    return http.get('/book/getAllData',{
+        params:{
+        page:page,
+        pagesize:pagesize
+    }})
 }
 
 export const deldata = isbn => {
