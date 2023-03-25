@@ -1,99 +1,190 @@
 <template>
+
+
+  <div class="table">
+    <el-row>
+      <el-col :span="5">
+        <!--   搜索框     -->
+        <el-input
+            type="text"
+            v-model="searchInput"
+            class="w-50 m-2"
+            size="large"
+            placeholder="Please Input"
+            :prefix-icon="Search"
+            @keyup.enter="search"
+        >
+          <!--  搜索按钮-->
+          <template #append>
+            <el-button
+                :icon="Search"
+                @click="search"
+            />
+          </template>
+
+        </el-input>
+      </el-col>
+
+      <!--   搜索框旁按钮   -->
+      <el-col :span="4">
+        <el-button
+            type="primary"
+            size="large"
+            :icon="Plus"
+            @click="handleAdd"
+        >新增
+        </el-button>
+        <el-button type="danger" size="large" :icon="Delete">删除</el-button>
+      </el-col>
+
+    </el-row>
     <el-table :data="tableData" border style="width: 100%">
-        <el-table-column prop="isbn" label="ISBN" width="140" />
-        <el-table-column prop="tittle" label="书名" />
-        <el-table-column prop="price" label="标价" width="80" />
-        <el-table-column prop="press" label="出版社" width="120" />
-        <el-table-column prop="type" label="类型" width="120" />
-        <el-table-column prop="restriction" label="是否为限制级" width="120" />
-        <el-table-column prop="author" label="作者" width="120" />
-        <el-table-column prop="publication_date" label="出版日" />
-        <el-table-column label="编辑">
-            <template #default="scope">
-                <el-button size="small">Edit</el-button>
-                <el-button size="small" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
-            </template>
-        </el-table-column>
+      <el-table-column type="selection" width="55"/>
+      <el-table-column prop="isbn" label="ISBN" width="140"/>
+      <el-table-column prop="tittle" label="书名"/>
+      <el-table-column prop="price" label="标价" width="80"/>
+      <el-table-column prop="press" label="出版社" width="120"/>
+      <el-table-column prop="type" label="类型" width="120"/>
+      <el-table-column prop="restriction" label="是否为限制级" width="120"/>
+      <el-table-column prop="author" label="作者" width="120"/>
+      <el-table-column prop="publication_date" label="出版日"/>
+      <el-table-column label="编辑">
+        <template #default="scope">
+          <el-button size="small" @click="handleEdit(scope.row.id)">Edit</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
+        </template>
+      </el-table-column>
     </el-table>
-    <div class="demo-pagination-block">
-        <el-pagination background v-model:current-page="currentpage" v-model:page-size="pageSize"
-            :page-sizes="[10, 20, 50, 100]" :background="background" layout="total, sizes, prev, pager, next, jumper"
-            :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-    </div>
+
+  </div>
+
+  <div class="demo-pagination-block">
+    <el-pagination background v-model:current-page="currentpage" v-model:page-size="pageSize"
+                   :page-sizes="[10, 20, 50, 100]" :background="background"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+  </div>
+
+  <GetBookEdit
+      :visible="formVisible"
+      :dataID="dataId"
+      @update:visible="formVisible = $event"
+  />
+
+
 </template>
 
 <script>
-import { getalldata, deldata } from "@/api";
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {getalldata, delData} from "@/api";
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {Delete, Plus, Search} from "@element-plus/icons-vue";
+import GetBookEdit from "@/views/getbook/_edit.vue"
+import {ref} from 'vue'
 
 export default {
-    name: "getbook",
-    data() {
-        return {
-            tableData: [],
-            page: 1,
-            currentpage: 1,
-            pageSize: 10,
-            total: 0
-        }
+  name: "getbook",
+  components: {GetBookEdit},
+  computed: {
+    Plus() {
+      return Plus
     },
-    methods: {
-        getData(page, pageSize) {
-            getalldata(page, pageSize).then(data => {
-                this.tableData = data.data
-                this.total = data.total
-            })
-        },
-        handleDelete(row) {
-            ElMessageBox.confirm(
-                '确定要删除这条数据?',
-                'Warning',
-                {
-                    confirmButtonText: 'OK',
-                    cancelButtonText: 'Cancel',
-                    type: 'warning',
-                }
-            ).then(() => {
-                deldata(row["isbn"])
-                ElMessage({
-                    type: 'success',
-                    message: 'Delete completed',
-                })
-                this.total =this.total -1 //用于触发页面刷新
-            })
-                .catch(() => {
-                    ElMessage({
-                        type: 'info',
-                        message: 'Delete canceled',
-                    })
-                })
-        },
-        
-        // 点击页码触发事件
-        handleCurrentChange(val) {
-            this.page = val
-        },
-        // 更改每页显示数量触发事件
-        handleSizeChange(val) {
-            this.pageSize = val
-        }
-
+    Delete() {
+      return Delete
     },
-    mounted() {
-        this.getData(this.page, this.pageSize)
-    },
-    watch: {
-        page() {
-            this.getData(this.page, this.pageSize)
-        },
-        pageSize() {
-            this.getData(this.page, this.pageSize)
-        },
-        total() {
-            this.getData(this.page, this.pageSize)
-        }
+    Search() {
+      return Search
     }
+
+  },
+  data() {
+    return {
+      tableData: [],
+      page: 1,
+      currentpage: 1,
+      pageSize: 10,
+      total: 0,
+      searchInput: ref(''), //搜索框文本
+      formVisible: false,
+      dataId: undefined
+    }
+  },
+  methods: {
+    getData(page, pageSize) {
+      getalldata(page, pageSize).then(data => {
+        this.tableData = data.data
+        this.total = data.total
+      })
+    },
+    handleDelete(row) {
+      ElMessageBox.confirm(
+          '确定要删除这条数据?',
+          'Warning',
+          {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+          }
+      ).then(() => {
+        delData(row["id"])
+        ElMessage({
+          type: 'success',
+          message: 'Delete completed',
+        })
+        this.total = this.total - 1 //用于触发页面刷新
+      })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: 'Delete canceled',
+            })
+          })
+    },
+    // 点击页码触发事件
+    handleCurrentChange(val) {
+      this.page = val
+    },
+    // 更改每页显示数量触发事件
+    handleSizeChange(val) {
+      this.pageSize = val
+    },
+
+    search() {
+      console.log(this.searchInput)
+    },
+
+    handleAdd() {
+      this.formVisible = !this.formVisible
+      this.dataId = undefined
+      // console.log(this.formVisible)
+    },
+    handleEdit(id) {
+      this.formVisible = !this.formVisible
+      this.dataId = id.toString()
+      // console.log(this.dataId)
+    }
+  },
+  mounted() {
+    this.getData(this.page, this.pageSize)
+  },
+  watch: {
+    page() {
+      this.getData(this.page, this.pageSize)
+    },
+    pageSize() {
+      this.getData(this.page, this.pageSize)
+    },
+    total() {
+      this.getData(this.page, this.pageSize)
+    }
+  }
 
 
 }
 </script>
+
+<style scoped>
+.table .el-row {
+  margin-bottom: 20px;
+}
+
+</style>
