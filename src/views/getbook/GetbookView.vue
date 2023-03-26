@@ -31,14 +31,24 @@
             type="primary"
             size="large"
             :icon="Plus"
-            @click="handleAdd"
+            @click="tableHandleAdd"
         >新增
         </el-button>
-        <el-button type="danger" size="large" :icon="Delete">删除</el-button>
+        <el-button
+            type="danger"
+            size="large"
+            :icon="Delete"
+            @click="tableHandleDelete"
+        >删除
+        </el-button>
       </el-col>
 
     </el-row>
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table
+        :data="tableData"
+        @selection-change="tableHandleSelectionChange"
+        border style="width: 100%"
+    >
       <el-table-column type="selection" width="55"/>
       <el-table-column prop="isbn" label="ISBN" width="140"/>
       <el-table-column prop="tittle" label="书名"/>
@@ -50,7 +60,7 @@
       <el-table-column prop="publication_date" label="出版日"/>
       <el-table-column label="编辑">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.row.id)">Edit</el-button>
+          <el-button size="small" @click="tableHandleEdit(scope.row)">Edit</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
         </template>
       </el-table-column>
@@ -62,23 +72,26 @@
     <el-pagination background v-model:current-page="currentpage" v-model:page-size="pageSize"
                    :page-sizes="[10, 20, 50, 100]" :background="background"
                    layout="total, sizes, prev, pager, next, jumper"
-                   :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+                   :total="total" @size-change="footerSizeChange" @current-change="footerCurrentChange"/>
   </div>
 
   <GetBookEdit
       :visible="formVisible"
-      :dataID="dataId"
+      :BookData="compData"
+      :buttonType="buttonType"
       @update:visible="formVisible = $event"
+      @update:checkType="checkType = $event"
   />
 
 
 </template>
 
 <script>
-import {getalldata, delData} from "@/api";
+import {getAllData, delData} from "@/api";
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Delete, Plus, Search} from "@element-plus/icons-vue";
 import GetBookEdit from "@/views/getbook/_edit.vue"
+import bookData from "@/class/bookdata"
 import {ref} from 'vue'
 
 export default {
@@ -105,12 +118,15 @@ export default {
       total: 0,
       searchInput: ref(''), //搜索框文本
       formVisible: false,
-      dataId: undefined
+      compData: undefined,
+      checkType: false, //点击提交后刷新页面
+      buttonType: "",//窗口状态
+      SelectionList: [] //多选框列表
     }
   },
   methods: {
     getData(page, pageSize) {
-      getalldata(page, pageSize).then(data => {
+      getAllData(page, pageSize).then(data => {
         this.tableData = data.data
         this.total = data.total
       })
@@ -139,29 +155,58 @@ export default {
             })
           })
     },
+
     // 点击页码触发事件
-    handleCurrentChange(val) {
+    footerCurrentChange(val) {
       this.page = val
     },
     // 更改每页显示数量触发事件
-    handleSizeChange(val) {
-      this.pageSize = val
+    footerSizeChange(val) {
+      this.pageSize = val;
+    },
+
+    tableHandleDelete() {
+      let data = this.SelectionList;
+      ElMessageBox.confirm(
+          '确定要删除这些数据?',
+          'Warning',
+          {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+          }
+      ).then(() => {
+        for (let i = 0; i < data.length; i++) {
+          delData(data[i].id)
+        }
+        this.total = this.total - 1 //触发页面刷新
+      }).catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Delete canceled',
+        })
+      })
     },
 
     search() {
-      console.log(this.searchInput)
+      console.log(this.searchInput);
     },
 
-    handleAdd() {
-      this.formVisible = !this.formVisible
-      this.dataId = undefined
-      // console.log(this.formVisible)
+    tableHandleAdd() {
+      this.formVisible = !this.formVisible;
+      this.compData = bookData;
+      this.buttonType = "Add";
     },
-    handleEdit(id) {
-      this.formVisible = !this.formVisible
-      this.dataId = id.toString()
-      // console.log(this.dataId)
-    }
+    tableHandleEdit(row) {
+      this.formVisible = !this.formVisible;
+      this.buttonType = "Edit";
+      this.compData = row;
+    },
+    // 多选框触发事件
+    tableHandleSelectionChange(val) {
+      this.SelectionList = val;
+    },
+
   },
   mounted() {
     this.getData(this.page, this.pageSize)
@@ -175,6 +220,9 @@ export default {
     },
     total() {
       this.getData(this.page, this.pageSize)
+    },
+    checkType() {
+      this.getData(this.page, this.pageSize)
     }
   }
 
@@ -183,8 +231,5 @@ export default {
 </script>
 
 <style scoped>
-.table .el-row {
-  margin-bottom: 20px;
-}
 
 </style>

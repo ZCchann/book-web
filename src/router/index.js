@@ -22,6 +22,14 @@ const routes = [
                     title: "数据管理"
                 },
                 component: () => import('../views/getbook/GetbookView.vue')
+            },
+            {
+                path: '/user',
+                name: 'User',
+                meta: {
+                    title: "用户管理"
+                },
+                component: () => import('@/views/user/UserView.vue')
             }
         ]
     },
