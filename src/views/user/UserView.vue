@@ -70,6 +70,7 @@
   </div>
   <UserEdit
       :visible="formVisible"
+      :dataID="dataId"
       @update:visible="formVisible = $event"
   />
 </template>
@@ -101,6 +102,7 @@ export default {
       page: 1,
       currentpage: 1,
       pageSize: 10,
+      dataId: undefined,
       formVisible: false,
       searchInput: ref(''), //搜索框文本
       SelectionList: [] //多选框列表
@@ -110,12 +112,14 @@ export default {
   methods: {
     getAllUserData(page, pageSize) {
       getAllUser(page, pageSize).then(data => {
+        console.log(data)
         this.userDataTable = data.data
         this.total = data.total
       })
     },
     tableHandleEdit(row) {
-
+      this.formVisible = true;
+      this.dataId = row.id;
     },
     handleDelete(row) {
 

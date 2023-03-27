@@ -7,12 +7,11 @@ const routes = [
         path: '/',
         name: 'home',
         component: HomeView,
-        meta:{title:"首页"},
         children: [
             {
                 path: '/index',
                 name: 'Index',
-
+                meta:{title:"首页"},
                 component: () => import('../views/index/index.vue')
             },
             {

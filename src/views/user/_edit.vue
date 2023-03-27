@@ -33,13 +33,17 @@
 </template>
 
 <script>
-import {addData, editData} from "@/api";
+import {getOneUserData} from "@/api";
 import {ElMessage} from "element-plus";
 
 export default {
   name: "UserEdit",
   props: {
     visible: Boolean,
+    dataID:{
+      type:String,
+      default: undefined
+    }
   },
   data() {
     return {
@@ -49,11 +53,14 @@ export default {
         password:"",
         email:""
       },
-      type: ""
+      buttonType:""
     }
   },
   methods: {
     getInfo() {
+      getOneUserData(this.dataID).then(
+        ({data}) => this.form = data[0]
+      )
     },
     //关闭当前页面
     dialogClose() {
@@ -86,6 +93,7 @@ export default {
   watch:{
     visible(val) {
       this.drawer = val;
+      this.getInfo()
     }
   }
 }

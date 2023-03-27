@@ -1,51 +1,33 @@
 <template>
-
-  <el-dialog
-      v-model="drawer"
-      width="50%"
-      draggable
-      @close="dialogClose"
-  >
+  <el-dialog v-model="drawer" width="50%" draggable @close="dialogClose">
 
 
-    <el-form
-        ref="form"
-        :model="form"
-        :inline="true"
-        label-position="right"
-        label-suffix=":"
-        label-width="120px"
-    >
-      <el-form-item label="ISBN">
-        <el-input v-model="form.isbn"/>
+    <el-form ref="form" :model="form" :inline="true" label-position="right" label-suffix=":" label-width="120px">
+      <el-form-item prop="isbn" label="ISBN">
+        <el-input v-model="form.isbn" />
       </el-form-item>
 
-      <el-form-item label="书名">
-        <el-input v-model="form.tittle"/>
+      <el-form-item prop="tittle" label="书名">
+        <el-input v-model="form.tittle" />
       </el-form-item>
 
-      <el-form-item label="标价">
-        <el-input v-model="form.price"/>
+      <el-form-item prop="price" label="标价">
+        <el-input v-model="form.price" />
       </el-form-item>
-      <el-form-item label="出版社">
-        <el-input v-model="form.press"/>
+      <el-form-item prop="press" label="出版社">
+        <el-input v-model="form.press" />
       </el-form-item>
-      <el-form-item label="类型">
-        <el-input v-model="form.type"/>
+      <el-form-item prop="type" label="类型">
+        <el-input v-model="form.type" />
       </el-form-item>
-      <el-form-item label="是否为限制级">
-        <el-input v-model="form.restriction"/>
+      <el-form-item prop="restriction" label="是否为限制级">
+        <el-input v-model="form.restriction" />
       </el-form-item>
-      <el-form-item label="作者">
-        <el-input v-model="form.author"/>
+      <el-form-item prop="author" label="作者">
+        <el-input v-model="form.author" />
       </el-form-item>
-      <el-form-item label="出版日">
-        <el-date-picker
-            v-model="form.publication_date"
-            type="date"
-            placeholder="Pick a day"
-            size="large"
-        />
+      <el-form-item prop="publication_date" label="出版日">
+        <el-date-picker v-model="form.publication_date" type="date" placeholder="Pick a day" size="large" />
       </el-form-item>
 
     </el-form>
@@ -53,25 +35,26 @@
     <el-button type="success" @click="submit">提交</el-button>
     <el-button type="info" @click="dialogClose">取消</el-button>
   </el-dialog>
-
-
 </template>
 
 <script>
 
-import {addData, editData} from "@/api";
-import {ElMessage} from "element-plus";
+import { addData, editData, getData } from "@/api";
+import { ElMessage } from "element-plus";
 
 export default {
   name: "GetBookEdit",
   props: {
     visible: Boolean,
-    checkType: Boolean,
     buttonType: String,
-    BookData: Object
-
+    dataID: {
+      type: Number,
+      default: undefined
+    },
+    // onSuccess: { type: Function, require: true }
+    onSuccess:Function
   },
-  emits: ["update:visible", "update:checkType"],
+  emits: ["update:visible"],
   data() {
     return {
       drawer: false,
@@ -90,12 +73,28 @@ export default {
     }
   },
   methods: {
-    getInfo() {
-      this.form = this.BookData
+    getInfo(dataId) {
+      getData(dataId).then(({ data }) => {
+        this.form = data[0];
+      })
     },
     //关闭当前页面
     dialogClose() {
+      // TODO: 重置不生效
+      this.$refs.form.resetFields();
+      // this.form = {
+      //   id: 0,
+      //   isbn: "",
+      //   tittle: "",
+      //   price: 0,
+      //   press: "",
+      //   type: "",
+      //   restriction: 0,
+      //   author: "",
+      //   publication_date: ""
+      // }
       this.$emit('update:visible', false);
+
     },
     submit() {
       this.form.id = Number(this.form.id)
@@ -103,32 +102,33 @@ export default {
       this.form.restriction = Number(this.form.restriction)
       if (this.buttonType === "Add") {
         addData(this.form).then(() => {
-              ElMessage({
-                type: 'success',
-                message: '提交成功',
-              })
-            }
+          ElMessage({
+            type: 'success',
+            message: '提交成功',
+          })
+          this.onSuccess();
+        }
         )
       } else {
         editData(this.form).then(() => {
-              ElMessage({
-                type: 'success',
-                message: '更改成功',
-              })
-            }
+          ElMessage({
+            type: 'success',
+            message: '更改成功',
+          })
+          this.onSuccess();
+        }
         )
       }
-      console.log("start ",this.checkType)
+      // todo: 执行顺序问题 刷新页面在提交前面
       this.$emit('update:visible', false);
-      this.$emit('update:checkType', !this.checkType);
-      console.log("end ",this.checkType)
+      
     }
   },
   watch: {
     visible(val) {
       this.drawer = val;
-      if (val) {
-        this.getInfo()
+      if (val && this.dataID) {
+        this.getInfo(this.dataID)
       }
     }
   }

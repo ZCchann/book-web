@@ -4,7 +4,7 @@ export const http = axios({
     baseURL: "http://127.0.0.1:5000"
 })
 
-//user
+//用户数据
 export const login = ({username, password}) => {
     return http.post('/login', {username, password})
 }
@@ -16,6 +16,9 @@ export const getAllUser = (page, pagesize) => {
             pagesize: pagesize
         }
     })
+}
+export const getOneUserData = id => {
+    return http.get(`/user/getUser/${id}/`)
 }
 
 

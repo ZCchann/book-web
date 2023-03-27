@@ -1,13 +1,13 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <NavMenu/>
+      <NavMenu />
       <el-container>
         <el-header>
-          <Breadcrumb/>
+          <Breadcrumb />
         </el-header>
         <el-main>
-          <router-view/>
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -21,7 +21,7 @@ import Breadcrumb from "./breadcrumb/breadcrumb.vue";
 export default {
   components: {
     Breadcrumb,
-    NavMenu
+    NavMenu,
   }
 }
 
@@ -48,5 +48,4 @@ export default {
 .common-layout .el-main {
   padding: 0;
 }
-
 </style>
