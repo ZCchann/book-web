@@ -1,104 +1,132 @@
 <template>
-  <el-dialog
-      v-model="drawer"
-      width="50%"
-      draggable
-      @close="dialogClose"
-  >
+  <el-dialog v-model="drawer" :title="buttonType" width="50%" draggable @close="dialogClose">
 
-    <el-form
-        ref="form"
-        :model="form"
-        :inline="true"
-        label-position="left"
-        label-suffix=":"
-        label-width="120px"
-    >
-      <el-form-item label="用户名">
-        <el-input v-model="form.username"/>
+    <el-form ref="form" :model="form" label-position="left" label-suffix=":" label-width="120px">
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="form.username" />
       </el-form-item>
-      <el-form-item label="密码">
-        <el-input v-model="form.password"/>
+      <el-form-item label="邮箱" prop="email" :rules="[
+        {
+          required: true,
+          message: 'Please input email address',
+          trigger: 'blur',
+        },
+        {
+          type: 'email',
+          message: 'Please input correct email address',
+          trigger: ['blur', 'change'],
+        },
+      ]">
+        <el-input v-model="form.email" />
       </el-form-item>
-      <el-form-item label="邮箱">
-        <el-input v-model="form.email"/>
+
+      <el-form-item label="密码" prop="password">
+        <el-input v-model="form.password" type="password" show-password />
       </el-form-item>
+      <el-button type="primary" @click="generateRandomString">生成随机密码</el-button>
 
     </el-form>
 
     <el-button type="success" @click="submit">提交</el-button>
     <el-button type="info" @click="dialogClose">取消</el-button>
   </el-dialog>
-
 </template>
 
 <script>
-import {getOneUserData} from "@/api";
-import {ElMessage} from "element-plus";
+import { getOneUserData, addUser } from "@/api";
+import { ElMessage } from "element-plus";
+import { ref } from 'vue'
 
 export default {
   name: "UserEdit",
   props: {
     visible: Boolean,
-    dataID:{
-      type:String,
+    buttonType: String,
+    dataID: {
+      type: String,
       default: undefined
-    }
+    },
+    onSuccess: Function
   },
   data() {
     return {
       drawer: false,
       form: {
-        username:"",
-        password:"",
-        email:""
+        username: "",
+        password: "",
+        email: "",
       },
-      buttonType:""
+      passwordType: ref(true)
     }
   },
   methods: {
-    getInfo() {
-      getOneUserData(this.dataID).then(
-        ({data}) => this.form = data[0]
+    handleSuccess(){
+      if (this.onSuccess) {
+        this.onSuccess()
+      }
+      this.dialogClose()
+    },
+    getInfo(dataID) {
+      getOneUserData(dataID).then(({ data }) => {
+        Object.keys(this.form).forEach(key => {
+          this.form[key] = data[key];
+        })
+      }
       )
     },
     //关闭当前页面
     dialogClose() {
+      this.$refs.form.resetFields();
       this.$emit('update:visible', false);
     },
     submit() {
+      console.log(this.password)
       if (this.buttonType === "Add") {
-        addData(this.form).then(() => {
-              ElMessage({
-                type: 'success',
-                message: '提交成功',
-              })
-            }
+        addUser(this.form).then(() => {
+          ElMessage({
+            type: 'success',
+            message: '提交成功',
+          })
+          this.handleSuccess()
+        }
         )
       } else {
         editData(this.form).then(() => {
-              ElMessage({
-                type: 'success',
-                message: '更改成功',
-              })
-            }
+          ElMessage({
+            type: 'success',
+            message: '更改成功',
+          })
+          this.handleSuccess();
+        }
         )
       }
-      console.log("start ",this.checkType)
-      this.$emit('update:visible', false);
-      this.$emit('update:checkType', !this.checkType);
-      console.log("end ",this.checkType)
+      // this.$emit('update:visible', false);
+      // this.$nextTick(() => {
+      // utils.copyFormObject(data, this.form);
+  // });
+      // this.$refs.form.resetFields();
+      // this.form.username = "";
+      // this.form.password = "";
+      // this.form.email = "";
+    },
+    generateRandomString() {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = "";
+      for (let i = 0; i < 8; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      this.form.password = result;
     }
   },
-  watch:{
+  watch: {
     visible(val) {
       this.drawer = val;
-      this.getInfo()
+      if (val && this.dataID) {
+        this.getInfo(this.dataID)
+      }
     }
   }
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

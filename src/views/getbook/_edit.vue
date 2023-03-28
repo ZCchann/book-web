@@ -27,7 +27,13 @@
         <el-input v-model="form.author" />
       </el-form-item>
       <el-form-item prop="publication_date" label="出版日">
-        <el-date-picker v-model="form.publication_date" type="date" placeholder="Pick a day" size="large" />
+        <el-date-picker 
+        v-model="form.publication_date" 
+        type="date" 
+        placeholder="Pick a day" 
+        size="large" 
+        format="YYYY-MM-DD"
+        />
       </el-form-item>
 
     </el-form>
@@ -75,24 +81,12 @@ export default {
   methods: {
     getInfo(dataId) {
       getData(dataId).then(({ data }) => {
-        this.form = data[0];
+        this.form = data;
       })
     },
     //关闭当前页面
     dialogClose() {
-      // TODO: 重置不生效
       this.$refs.form.resetFields();
-      // this.form = {
-      //   id: 0,
-      //   isbn: "",
-      //   tittle: "",
-      //   price: 0,
-      //   press: "",
-      //   type: "",
-      //   restriction: 0,
-      //   author: "",
-      //   publication_date: ""
-      // }
       this.$emit('update:visible', false);
 
     },
@@ -121,7 +115,7 @@ export default {
       }
       // todo: 执行顺序问题 刷新页面在提交前面
       this.$emit('update:visible', false);
-      
+      this.$refs.form.resetFields();
     }
   },
   watch: {

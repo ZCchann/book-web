@@ -48,6 +48,7 @@
     </div>
 
     <div class="table">
+      <!-- 多选按钮 -->
       <el-table
           :data="userDataTable"
           border
@@ -71,14 +72,17 @@
   <UserEdit
       :visible="formVisible"
       :dataID="dataId"
+      :on-Success="getData"
+      :button-Type="buttonType" 
       @update:visible="formVisible = $event"
   />
 </template>
 
 <script>
 import {Delete, Plus, Search} from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from 'element-plus'
 import UserEdit from "./_edit.vue"
-import {getAllUser} from "@/api";
+import {getAllUser,delUser} from "@/api";
 import {ref} from "vue";
 
 export default {
@@ -104,15 +108,15 @@ export default {
       pageSize: 10,
       dataId: undefined,
       formVisible: false,
+      buttonType: "",//窗口状态
       searchInput: ref(''), //搜索框文本
       SelectionList: [] //多选框列表
 
     }
   },
   methods: {
-    getAllUserData(page, pageSize) {
-      getAllUser(page, pageSize).then(data => {
-        console.log(data)
+    getData() {
+      getAllUser(this.page, this.pageSize).then(data => {
         this.userDataTable = data.data
         this.total = data.total
       })
@@ -120,15 +124,38 @@ export default {
     tableHandleEdit(row) {
       this.formVisible = true;
       this.dataId = row.id;
+      this.buttonType = "Edit";
     },
-    handleDelete(row) {
+    handleDelete() {
 
     },
     tableHandleAdd() {
       this.formVisible = !this.formVisible;
+      this.buttonType = "Add";
+      this.dataId = undefined;
     },
     tableHandleDelete() {
-
+      let data = this.SelectionList;
+      ElMessageBox.confirm(
+        '确定要删除这些数据?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      ).then(() => {
+        for (let i = 0; i < data.length; i++) {
+          // todo: 需要更改请求方式 更改为发送数组 然后在返回的then里面刷新页面
+          delUser(data[i].id);
+        };
+        this.getData();
+      }).catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Delete canceled',
+        })
+      })
     },
     search() {
 
@@ -140,7 +167,7 @@ export default {
 
   },
   mounted() {
-    this.getAllUserData(this.page, this.pageSize)
+    this.getData()
   }
 
 }

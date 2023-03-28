@@ -21,6 +21,14 @@ export const getOneUserData = id => {
     return http.get(`/user/getUser/${id}/`)
 }
 
+export const addUser = (data) => {
+    return http.post('/user/adduser', data)
+}
+
+export const delUser = id => {
+    return http.delete(`/user/delUser/${id}/`)
+}
+
 
 //图书数据
 export const getAllData = (page, pagesize) => {
@@ -45,4 +53,14 @@ export const editData = (data) => {
 }
 export const addData = (data) => {
     return http.post('/book/addData', data)
+}
+
+export const searchData = (title, page, pageSize) => {
+    return http.get('/book/search/', {
+        params: {
+            title: title,
+            page: page,
+            pagesize: pageSize
+        }
+    })
 }
