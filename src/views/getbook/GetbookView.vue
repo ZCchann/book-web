@@ -14,18 +14,15 @@
       </el-col>
 
       <!--   搜索框旁按钮   -->
-      <el-col :span="4">
+      <el-col :span="6">
         <el-button type="primary" size="large" :icon="Plus" @click="tableHandleAdd">新增
         </el-button>
         <el-button type="danger" size="large" :icon="Delete" @click="tableHandleDelete">删除
         </el-button>
+        <el-button type="success" size="large" :icon="DocumentAdd" @click="tableHandleImport">导入
+        </el-button>
+      </el-col>
 
-      </el-col>
-      <el-col :span="1">
-        <el-upload class="upload-demo">
-          <el-button type="primary" size="large">Click to upload</el-button>
-        </el-upload>
-      </el-col>
     </el-row>
     <el-table :data="tableData" @selection-change="tableHandleSelectionChange" border style="width: 100%" height="790">
       <el-table-column type="selection" width="55"/>
@@ -55,24 +52,32 @@
   </div>
 
   <GetBookEdit
-      :visible="formVisible"
+      :visible="AddVisible"
       :button-Type="buttonType"
       :on-Success="getData"
       :data-ID="dataId"
-      @update:visible="formVisible = $event"/>
+      @update:visible="AddVisible = $event"/>
+  <importForm
+      :visible="importVisible"
+      @update:visible="importVisible = $event"/>
+  />
 </template>
 
 <script>
 import {getAllData, delData, searchData} from "@/api";
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {Delete, Plus, Search} from "@element-plus/icons-vue";
-import GetBookEdit from "@/views/getbook/_edit.vue"
+import {Delete, DocumentAdd, Plus, Search} from "@element-plus/icons-vue";
+import GetBookEdit from "@/views/getbook/_edit.vue";
+import ImportForm from "@/views/getbook/_import.vue";
 
 
 export default {
   name: "getbook",
-  components: {GetBookEdit},
+  components: {ImportForm, GetBookEdit},
   computed: {
+    DocumentAdd() {
+      return DocumentAdd
+    },
     Plus() {
       return Plus
     },
@@ -93,7 +98,8 @@ export default {
       total: 0,
       dataId: undefined,
       searchInput: "", //搜索框文本
-      formVisible: false,
+      AddVisible: false, // 新增/修改 窗口是否显示
+      importVisible: false,
       buttonType: "",//窗口状态
       SelectionList: [] //多选框列表
     }
@@ -175,7 +181,7 @@ export default {
       if (this.searchInput === "") {
         this.getAllData()
       } else {
-        searchData(this.searchInput,this.page,this.pageSize).then(
+        searchData(this.searchInput, this.page, this.pageSize).then(
             (data) => {
               this.tableData = data.data;
               this.total = data.total;
@@ -185,12 +191,17 @@ export default {
     },
 
     tableHandleAdd() {
-      this.formVisible = !this.formVisible;
+      this.AddVisible = !this.AddVisible;
       this.buttonType = "Add";
       this.dataId = undefined;
     },
+    tableHandleImport() {
+      this.importVisible = !this.importVisible;
+      // this.buttonType = "Add";
+      // this.dataId = undefined;
+    },
     tableHandleEdit(row) {
-      this.formVisible = !this.formVisible;
+      this.AddVisible = !this.AddVisible;
       this.buttonType = "Edit";
       this.dataId = row.id
     },

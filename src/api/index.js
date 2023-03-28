@@ -22,11 +22,25 @@ export const getOneUserData = id => {
 }
 
 export const addUser = (data) => {
-    return http.post('/user/adduser', data)
+    return http.post('/user/addUser', data)
 }
 
 export const delUser = id => {
     return http.delete(`/user/delUser/${id}/`)
+}
+
+export const searchUserData = (username, page, pageSize) => {
+    return http.get('/user/search/', {
+        params: {
+            username: username,
+            page: page,
+            pagesize: pageSize
+        }
+    })
+}
+
+export const editUser = (data) => {
+    return http.post('/user/updateUser', data)
 }
 
 

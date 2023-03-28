@@ -3,7 +3,8 @@
 
     <el-form ref="form" :model="form" label-position="left" label-suffix=":" label-width="120px">
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="form.username" />
+        <!--   todo:后续更改为 管理员可更改username     -->
+        <el-input v-model="form.username"/>
       </el-form-item>
       <el-form-item label="邮箱" prop="email" :rules="[
         {
@@ -17,11 +18,11 @@
           trigger: ['blur', 'change'],
         },
       ]">
-        <el-input v-model="form.email" />
+        <el-input v-model="form.email"/>
       </el-form-item>
 
       <el-form-item label="密码" prop="password">
-        <el-input v-model="form.password" type="password" show-password />
+        <el-input v-model="form.password" type="password" show-password/>
       </el-form-item>
       <el-button type="primary" @click="generateRandomString">生成随机密码</el-button>
 
@@ -33,9 +34,8 @@
 </template>
 
 <script>
-import { getOneUserData, addUser } from "@/api";
-import { ElMessage } from "element-plus";
-import { ref } from 'vue'
+import {getOneUserData, addUser, editUser} from "@/api";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "UserEdit",
@@ -56,22 +56,20 @@ export default {
         password: "",
         email: "",
       },
-      passwordType: ref(true)
+      resetPassword: false
     }
   },
   methods: {
-    handleSuccess(){
+    handleSuccess() {
       if (this.onSuccess) {
         this.onSuccess()
       }
       this.dialogClose()
     },
     getInfo(dataID) {
-      getOneUserData(dataID).then(({ data }) => {
-        Object.keys(this.form).forEach(key => {
-          this.form[key] = data[key];
-        })
-      }
+      getOneUserData(dataID).then(({data}) => {
+            this.form = data;
+          }
       )
     },
     //关闭当前页面
@@ -80,34 +78,25 @@ export default {
       this.$emit('update:visible', false);
     },
     submit() {
-      console.log(this.password)
       if (this.buttonType === "Add") {
         addUser(this.form).then(() => {
-          ElMessage({
-            type: 'success',
-            message: '提交成功',
-          })
-          this.handleSuccess()
-        }
+              ElMessage({
+                type: 'success',
+                message: '提交成功',
+              })
+              this.handleSuccess()
+            }
         )
       } else {
-        editData(this.form).then(() => {
-          ElMessage({
-            type: 'success',
-            message: '更改成功',
-          })
-          this.handleSuccess();
-        }
+        editUser(this.form).then(() => {
+              ElMessage({
+                type: 'success',
+                message: '更改成功',
+              })
+              this.handleSuccess();
+            }
         )
       }
-      // this.$emit('update:visible', false);
-      // this.$nextTick(() => {
-      // utils.copyFormObject(data, this.form);
-  // });
-      // this.$refs.form.resetFields();
-      // this.form.username = "";
-      // this.form.password = "";
-      // this.form.email = "";
     },
     generateRandomString() {
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

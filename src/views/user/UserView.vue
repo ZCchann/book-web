@@ -73,17 +73,16 @@
       :visible="formVisible"
       :dataID="dataId"
       :on-Success="getData"
-      :button-Type="buttonType" 
+      :button-Type="buttonType"
       @update:visible="formVisible = $event"
   />
 </template>
 
 <script>
 import {Delete, Plus, Search} from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import UserEdit from "./_edit.vue"
-import {getAllUser,delUser} from "@/api";
-import {ref} from "vue";
+import {getAllUser, delUser, searchUserData} from "@/api";
 
 export default {
   name: "UserView.vue",
@@ -109,7 +108,7 @@ export default {
       dataId: undefined,
       formVisible: false,
       buttonType: "",//窗口状态
-      searchInput: ref(''), //搜索框文本
+      searchInput: "", //搜索框文本
       SelectionList: [] //多选框列表
 
     }
@@ -137,18 +136,18 @@ export default {
     tableHandleDelete() {
       let data = this.SelectionList;
       ElMessageBox.confirm(
-        '确定要删除这些数据?',
-        'Warning',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning',
-        }
+          '确定要删除这些数据?',
+          'Warning',
+          {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+          }
       ).then(() => {
         for (let i = 0; i < data.length; i++) {
           // todo: 需要更改请求方式 更改为发送数组 然后在返回的then里面刷新页面
           delUser(data[i].id);
-        };
+        }
         this.getData();
       }).catch(() => {
         ElMessage({
@@ -157,8 +156,18 @@ export default {
         })
       })
     },
+    //搜索
     search() {
-
+      if (this.searchInput === "") {
+        this.getData()
+      } else {
+        searchUserData(this.searchInput, this.page, this.pageSize).then(
+            (data) => {
+              this.userDataTable = data.data;
+              this.total = data.total;
+            }
+        )
+      }
     },
     // 多选框触发事件
     tableHandleSelectionChange(val) {
