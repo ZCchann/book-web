@@ -11,7 +11,7 @@ const routes = [
             {
                 path: '/index',
                 name: 'Index',
-                meta:{title:"首页"},
+                meta: {title: "首页"},
                 component: () => import('../views/index/index.vue')
             },
             {
@@ -31,15 +31,29 @@ const routes = [
                 component: () => import('@/views/user/UserView.vue')
             },
             {
-                path:'/personalview',
-                name:'PersonalView',
+                path: '/personal',
+                name: 'PersonalView',
                 meta: {
                     title: "个人信息"
                 },
-                component:() => import('@/views/personal/PersonalView.vue')
-
-
-            }
+                component: () => import('@/views/personal/PersonalView.vue')
+            },
+            {
+                path: '/orderlist',
+                name: 'OrderListView',
+                meta: {
+                    title: "订单管理"
+                },
+                component: () => import('@/views/order/OrderView.vue')
+            },
+            {
+                path: '/neworder',
+                name: 'NewOrderView',
+                meta: {
+                    title: "新增订单"
+                },
+                component: () => import('@/views/order/newOrder/newOrderView.vue')
+            },
         ]
     },
     {
@@ -49,7 +63,12 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: LoginView
-    }
+    },
+{
+    path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+    component: () => import('../components/404.vue')
+}
 
 ]
 

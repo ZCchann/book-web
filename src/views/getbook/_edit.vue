@@ -109,7 +109,6 @@ export default {
       this.form.id = Number(this.form.id)
       this.form.price = Number(this.form.price)
       this.form.restriction = Number(this.form.restriction)
-      console.log(this.form)
       if (this.buttonType === "Add") {
         addData(this.form).then(() => {
           ElMessage({
