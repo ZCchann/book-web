@@ -17,16 +17,16 @@ export const getAllUser = (page, pagesize) => {
         }
     })
 }
-export const getOneUserData = id => {
-    return http.get(`/user/getUser/${id}/`)
+export const getOneUserData = uuid => {
+    return http.get(`/user/getUser/${uuid}/`)
 }
 
 export const addUser = (data) => {
     return http.post('/user/addUser', data)
 }
 
-export const delUser = id => {
-    return http.delete(`/user/delUser/${id}/`)
+export const delUser = uuid => {
+    return http.delete(`/user/delUser/${uuid}/`)
 }
 
 export const searchUserData = (username, page, pageSize) => {
@@ -77,4 +77,8 @@ export const searchData = (title, page, pageSize) => {
             pagesize: pageSize
         }
     })
+}
+
+export const uploadData = (data) => {
+    return http.post('/book/fileUpdate', data)
 }

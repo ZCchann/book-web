@@ -1,7 +1,5 @@
 <template>
   <el-dialog v-model="drawer" width="50%" draggable @close="dialogClose">
-
-
     <el-form ref="form" :model="form" :inline="true" label-position="right" label-suffix=":" label-width="120px">
       <el-form-item prop="isbn" label="ISBN">
         <el-input v-model="form.isbn" />
@@ -21,7 +19,18 @@
         <el-input v-model="form.type" />
       </el-form-item>
       <el-form-item prop="restriction" label="是否为限制级">
-        <el-input v-model="form.restriction" />
+        <el-select
+            v-model="form.restriction"
+            placeholder="Select"
+        >
+          <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+          />
+        </el-select>
+<!--        <el-input v-model="form.restriction" />-->
       </el-form-item>
       <el-form-item prop="author" label="作者">
         <el-input v-model="form.author" />
@@ -33,6 +42,7 @@
         placeholder="Pick a day"
         size="large"
         format="YYYY-MM-DD"
+        value-format="X"
         />
       </el-form-item>
 
@@ -57,7 +67,6 @@ export default {
       type: Number,
       default: undefined
     },
-    // onSuccess: { type: Function, require: true }
     onSuccess:Function
   },
   emits: ["update:visible"],
@@ -75,7 +84,14 @@ export default {
         author: "",
         publication_date: ""
       },
-      type: ""
+      type: "",
+      options : [{
+        value:0,
+        label:"否"
+      },{
+        value:1,
+        label:"是"
+      }]
     }
   },
   methods: {
@@ -88,12 +104,12 @@ export default {
     dialogClose() {
       this.$refs.form.resetFields();
       this.$emit('update:visible', false);
-
     },
     submit() {
       this.form.id = Number(this.form.id)
       this.form.price = Number(this.form.price)
       this.form.restriction = Number(this.form.restriction)
+      console.log(this.form)
       if (this.buttonType === "Add") {
         addData(this.form).then(() => {
           ElMessage({

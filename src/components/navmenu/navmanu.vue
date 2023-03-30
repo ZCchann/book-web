@@ -7,26 +7,7 @@
           {{ i.meta.title }}
         </el-menu-item>
       </template>
-
-
-           <!-- 无子集
-      <el-menu-item index="/index">
-        <span>首页</span>
-      </el-menu-item>
-
-      <el-menu-item index="/alldata">
-        <span>数据管理</span>
-      </el-menu-item>
-
-      <el-menu-item index="/user">
-        <span>用户管理</span>
-      </el-menu-item> -->
-
-      <!-- <el-menu-item v-for="(i, idx) in getRouter">
-        {{ i.meta.title }}
-      </el-menu-item> -->
-
-
+      
     </el-menu>
   </el-aside>
 </template>

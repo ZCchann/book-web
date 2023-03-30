@@ -72,7 +72,7 @@
   <UserEdit
       :visible="formVisible"
       :dataID="dataId"
-      :on-Success="getData"
+      :on-Success="getAllData"
       :button-Type="buttonType"
       @update:visible="formVisible = $event"
   />
@@ -115,6 +115,9 @@ export default {
   },
   methods: {
     getData() {
+      this.search()
+    },
+    getAllData() {
       getAllUser(this.page, this.pageSize).then(data => {
         this.userDataTable = data.data
         this.total = data.total
@@ -122,11 +125,34 @@ export default {
     },
     tableHandleEdit(row) {
       this.formVisible = true;
-      this.dataId = row.id;
+      this.dataId = row.uuid;
       this.buttonType = "Edit";
     },
-    handleDelete() {
-
+    handleDelete(row) {
+      ElMessageBox.confirm(
+          '确定要删除这个用户?',
+          'Warning',
+          {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+          }
+      ).then(() => {
+        delUser(row["uuid"]).then(() => {
+          ElMessage({
+            type: 'success',
+            message: 'Delete completed',
+          });
+          //用于触发页面刷新
+          this.getAllData();
+        })
+      })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: 'Delete canceled',
+            })
+          })
     },
     tableHandleAdd() {
       this.formVisible = !this.formVisible;
@@ -146,9 +172,9 @@ export default {
       ).then(() => {
         for (let i = 0; i < data.length; i++) {
           // todo: 需要更改请求方式 更改为发送数组 然后在返回的then里面刷新页面
-          delUser(data[i].id);
+          delUser(data[i].uuid);
         }
-        this.getData();
+        this.getAllData();
       }).catch(() => {
         ElMessage({
           type: 'info',
@@ -159,7 +185,7 @@ export default {
     //搜索
     search() {
       if (this.searchInput === "") {
-        this.getData()
+        this.getAllData()
       } else {
         searchUserData(this.searchInput, this.page, this.pageSize).then(
             (data) => {
@@ -176,7 +202,7 @@ export default {
 
   },
   mounted() {
-    this.getData()
+    this.getAllData()
   }
 
 }

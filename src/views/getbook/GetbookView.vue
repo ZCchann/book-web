@@ -31,9 +31,10 @@
       <el-table-column prop="price" label="标价" width="80"/>
       <el-table-column prop="press" label="出版社" width="120"/>
       <el-table-column prop="type" label="类型" width="120"/>
-      <el-table-column prop="restriction" label="是否为限制级" width="120"/>
+      <el-table-column prop="restriction" label="是否为限制级" width="120" :formatter="restrictionFormat" />
       <el-table-column prop="author" label="作者" width="120"/>
-      <el-table-column prop="publication_date" label="出版日"/>
+      <el-table-column prop="publication_date" label="出版日" :formatter="formatterDate">
+      </el-table-column>
       <el-table-column label="编辑">
         <template #default="scope">
           <el-button size="small" @click="tableHandleEdit(scope.row)">Edit</el-button>
@@ -59,6 +60,7 @@
       @update:visible="AddVisible = $event"/>
   <importForm
       :visible="importVisible"
+      :on-Success="getData"
       @update:visible="importVisible = $event"/>
   />
 </template>
@@ -115,6 +117,26 @@ export default {
       })
     },
 
+    // 渲染时间 将时间戳转换为日期格式
+    formatterDate(row , column, value){
+      if (value) {
+        const date = new Date(parseInt(value) * 1000);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return year + '-' + month + '-' + day;
+      }
+      return '';
+    },
+
+    // 渲染限制级标签
+    restrictionFormat(row , column, value) {
+      if (value === 0) {
+        return "否";
+      }else{
+        return "是";
+      }
+    },
     handleDelete(row) {
       ElMessageBox.confirm(
           '确定要删除这条数据?',
@@ -209,17 +231,18 @@ export default {
     tableHandleSelectionChange(val) {
       this.SelectionList = val;
     },
-
   },
   mounted() {
     this.getAllData()
+
   },
+
   watch: {
     page() {
       this.getAllData()
     },
 
-  }
+  },
 
 
 }

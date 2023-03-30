@@ -29,6 +29,16 @@ const routes = [
                     title: "用户管理"
                 },
                 component: () => import('@/views/user/UserView.vue')
+            },
+            {
+                path:'/personalview',
+                name:'PersonalView',
+                meta: {
+                    title: "个人信息"
+                },
+                component:() => import('@/views/personal/PersonalView.vue')
+
+
             }
         ]
     },

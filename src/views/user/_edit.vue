@@ -1,25 +1,30 @@
 <template>
   <el-dialog v-model="drawer" :title="buttonType" width="50%" draggable @close="dialogClose">
 
-    <el-form ref="form" :model="form" label-position="left" label-suffix=":" label-width="120px">
+
+    <el-form ref="form" :model="form" :inline="true" label-position="right" label-suffix=":" label-width="120px">
+
       <el-form-item label="用户名" prop="username">
         <!--   todo:后续更改为 管理员可更改username     -->
         <el-input v-model="form.username"/>
       </el-form-item>
+
+
       <el-form-item label="邮箱" prop="email" :rules="[
-        {
-          required: true,
-          message: 'Please input email address',
-          trigger: 'blur',
-        },
-        {
-          type: 'email',
-          message: 'Please input correct email address',
-          trigger: ['blur', 'change'],
-        },
-      ]">
+            {
+              required: true,
+              message: 'Please input email address',
+              trigger: 'blur',
+            },
+            {
+              type: 'email',
+              message: 'Please input correct email address',
+              trigger: ['blur', 'change'],
+            },
+          ]">
         <el-input v-model="form.email"/>
       </el-form-item>
+
 
       <el-form-item label="密码" prop="password">
         <el-input v-model="form.password" type="password" show-password/>
