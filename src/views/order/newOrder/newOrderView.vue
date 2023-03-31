@@ -22,9 +22,17 @@
         <el-button type="success" size="large" :icon="DocumentAdd" @click="tableHandleImport">导入
         </el-button>
       </el-col>
-
+      <el-col :span="6">
+        <el-button type="primary" size="large" :icon="Plus" @click="tableHandleSubmit">提交订单</el-button>
+      </el-col>
     </el-row>
-    <el-table :data="tableData" @selection-change="tableHandleSelectionChange" border style="width: 100%" height="790">
+    <el-table
+        :data="tableData"
+        @selection-change="tableHandleSelectionChange"
+        border
+        style="width: 100%"
+        height="790"
+    >
       <el-table-column type="selection" width="55"/>
       <el-table-column prop="isbn" label="ISBN" width="140"/>
       <el-table-column prop="tittle" label="书名"/>
@@ -34,15 +42,22 @@
       <el-table-column prop="restriction" label="是否为限制级" width="120" :formatter="restrictionFormat"/>
       <el-table-column prop="author" label="作者" width="120"/>
       <el-table-column prop="publication_date" label="出版日" :formatter="formatterDate"/>
-      <el-table-column label="数量" >
+      <el-table-column label="数量">
         <template #default="scope">
-<!--          <el-input v-model="tableData.scope.amount" placeholder="Please input" />-->
+          <el-input-number
+              v-model="scope.row.amount"
+              prop="scope.row.amount"
+              :min="0"
+              :max="99"
+              :value-on-clear="0"
 
+          />
         </template>
       </el-table-column>
+
+
       <el-table-column label="编辑">
         <template #default="scope">
-          <el-button size="small" @click="tableHandleEdit(scope.row)">Edit</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope)">Delete</el-button>
         </template>
       </el-table-column>
@@ -50,34 +65,36 @@
 
   </div>
 
-  <div class="pagination-block">
-    <el-pagination background v-model:current-page="currentPage" v-model:page-size="pageSize"
-                   :page-sizes="[10, 20, 50, 100]" :background="background"
-                   layout="total, sizes, prev, pager, next, jumper"
-                   :total="total" @size-change="footerSizeChange" @current-change="footerCurrentChange"/>
-  </div>
-
   <AddOrder
       :visible="AddVisible"
       :formatterDate="formatterDate"
       :restrictionFormat="restrictionFormat"
-
       @update:visible="AddVisible = $event"
       @update:orderDate="tableData = $event"
   />
+  <Submit
+      :visible="submitVisible"
+      :formatterDate="formatterDate"
+      :restrictionFormat="restrictionFormat"
+      :orderDate="tableData"
+      @update:visible="submitVisible = $event"
+  />
+
 
 </template>
 
 <script>
-import {delData, searchData} from "@/api";
-import {ElMessage, ElMessageBox} from 'element-plus'
+import {searchData} from "@/api";
+import {ElMessageBox} from 'element-plus'
 import {Delete, DocumentAdd, Plus, Search} from "@element-plus/icons-vue";
 import AddOrder from "./_add.vue";
+import Submit from "./_submit.vue";
+import {formatterDate, restrictionFormat} from "@/utils/format";
 
 
 export default {
   name: "NewOrder",
-  components: {AddOrder},
+  components: {AddOrder, Submit},
   computed: {
     DocumentAdd() {
       return DocumentAdd
@@ -95,50 +112,30 @@ export default {
   },
   data() {
     return {
-      tableData: [],
+      tableData: [], //订单数据
       page: 1,
       currentPage: 1,
       pageSize: 10,
-      total: 0,
       dataId: undefined,
       searchInput: "", //搜索框文本
       AddVisible: false, // 新增/修改 窗口是否显示
       importVisible: false,
+      submitVisible: false,
       buttonType: "",//窗口状态
-      SelectionList: [] //多选框列表
+      SelectionList: [], //多选框列表
+      tempList: []
     }
   },
   methods: {
+    restrictionFormat,
+    formatterDate,
     getData() {
       this.search()
     },
     getAllData() {
-      // getAllData(this.page, this.pageSize).then(data => {
-      //   this.tableData = data.data;
-      //   this.total = data.total;
-      // })
+      this.tableData = this.tempList
     },
 
-    // 渲染时间 将时间戳转换为日期格式
-    formatterDate(row, column, value) {
-      if (value) {
-        const date = new Date(parseInt(value) * 1000);
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-        return year + '-' + month + '-' + day;
-      }
-      return '';
-    },
-
-    // 渲染限制级标签
-    restrictionFormat(row, column, value) {
-      if (value === 0) {
-        return "否";
-      } else {
-        return "是";
-      }
-    },
     handleDelete(row) {
       ElMessageBox.confirm(
           '确定要删除这条数据?',
@@ -149,19 +146,8 @@ export default {
             type: 'warning',
           }
       ).then(() => {
-        this.tableData.splice(row.$index,1)
+        this.tableData.splice(row.$index, 1)
       })
-    },
-
-    // 点击页码触发事件
-    footerCurrentChange(val) {
-      this.page = val;
-      this.getAllData();
-    },
-    // 更改每页显示数量触发事件
-    footerSizeChange(val) {
-      this.pageSize = val;
-      this.getAllData();
     },
 
     tableHandleDelete() {
@@ -175,27 +161,27 @@ export default {
             type: 'warning',
           }
       ).then(() => {
-        for (let i = 0; i < data.length; i++) {
-          // todo: 需要更改请求方式 更改为发送数组 然后在返回的then里面刷新页面
-          delData(data[i].id);
-        }
-        this.getAllData();
-      }).catch(() => {
-        ElMessage({
-          type: 'info',
-          message: 'Delete canceled',
-        })
-      })
+            let temp = []
+            for (let x = 0; x < this.tableData.length; x++) {
+              for (let i = 0; i < data.length; i++) {
+                if (data[i] !== this.tableData[x]) {
+                  temp.push(this.tableData[x])
+                }
+              }
+            }
+            this.tableData = temp;
+          }
+      )
     },
 
     search() {
       if (this.searchInput === "") {
         this.getAllData()
       } else {
+        this.tempList = this.tableData
         searchData(this.searchInput, this.page, this.pageSize).then(
             (data) => {
               this.tableData = data.data;
-              this.total = data.total;
             }
         )
       }
@@ -214,21 +200,23 @@ export default {
       this.buttonType = "Edit";
       this.dataId = row.id
     },
-    // 多选框触发事件
+    tableHandleSubmit() {
+      //计算一下每一个书本数量*单价后的结果 加入数组中
+      let data = this.tableData;
+      for (let i = 0;i < data.length; i++) {
+        data[i].total = data[i].price * data[i].amount;
+      }
+      this.submitVisible = !this.submitVisible;
+
+    },
+    //多选框触发事件
     tableHandleSelectionChange(val) {
       this.SelectionList = val;
     },
   },
   mounted() {
     this.getAllData()
-
-  },
-
-  watch: {
-    page() {
-      this.getAllData()
-    },
-  },
+  }
 
 
 }

@@ -46,7 +46,7 @@
   </div>
 
   <div class="pagination-block">
-    <el-pagination background v-model:current-page="currentpage" v-model:page-size="pageSize"
+    <el-pagination background v-model:current-page="currentPage" v-model:page-size="pageSize"
                    :page-sizes="[10, 20, 50, 100]" :background="background"
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total" @size-change="footerSizeChange" @current-change="footerCurrentChange"/>
@@ -71,6 +71,7 @@ import {ElMessage, ElMessageBox} from 'element-plus'
 import {Delete, DocumentAdd, Plus, Search} from "@element-plus/icons-vue";
 import GetBookEdit from "@/views/getbook/_edit.vue";
 import ImportForm from "@/views/getbook/_import.vue";
+import {formatterDate, restrictionFormat} from "@/utils/format";
 
 
 export default {
@@ -95,7 +96,7 @@ export default {
     return {
       tableData: [],
       page: 1,
-      currentpage: 1,
+      currentPage: 1,
       pageSize: 10,
       total: 0,
       dataId: undefined,
@@ -107,6 +108,8 @@ export default {
     }
   },
   methods: {
+    restrictionFormat,
+    formatterDate,
     getData() {
       this.search()
     },
@@ -117,26 +120,7 @@ export default {
       })
     },
 
-    // 渲染时间 将时间戳转换为日期格式
-    formatterDate(row , column, value){
-      if (value) {
-        const date = new Date(parseInt(value) * 1000);
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-        return year + '-' + month + '-' + day;
-      }
-      return '';
-    },
 
-    // 渲染限制级标签
-    restrictionFormat(row , column, value) {
-      if (value === 0) {
-        return "否";
-      }else{
-        return "是";
-      }
-    },
     handleDelete(row) {
       ElMessageBox.confirm(
           '确定要删除这条数据?',

@@ -7,8 +7,14 @@
       </el-form-item>
     </el-col>
 
-    <el-col :span="8">
-      <el-form-item label="密码">
+    <el-col :span="4">
+      <el-switch
+          v-model="showPassword"
+          inactive-text="是否更改密码"
+      />
+    </el-col>
+      <el-col :span="8">
+      <el-form-item v-show="showPassword" label="密码">
         <el-input
             type="password"
             show-password
@@ -42,7 +48,8 @@ export default {
         username: "",
         password: "",
         email: ""
-      }
+      },
+      showPassword:false
     }
   },
   methods: {
