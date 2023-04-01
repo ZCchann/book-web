@@ -1,4 +1,5 @@
 import axios from "@/utils/axios"
+import {getStorage} from "@/utils/browser";
 
 export const http = axios({
     baseURL: "http://127.0.0.1:5000"
@@ -81,4 +82,26 @@ export const searchData = (title, page, pageSize) => {
 
 export const uploadData = (data) => {
     return http.post('/book/fileUpdate', data)
+}
+
+export const createOrder = (data) => {
+    const headers = {
+        headers: {uuid: getStorage("uuid")}
+    };
+    return http.post('/order/create', data, headers)
+}
+
+export const getOrder = () => {
+    return http.get('/order/get_order',{
+        params:{
+            uuid:getStorage("uuid")
+        }
+    })
+}
+export const getOrderDetails = (orderNumber) => {
+    return http.get('/order/get_order_details',{
+        params:{
+            number:orderNumber
+        }
+    })
 }

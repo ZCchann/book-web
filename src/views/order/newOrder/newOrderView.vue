@@ -204,7 +204,7 @@ export default {
       //计算一下每一个书本数量*单价后的结果 加入数组中
       let data = this.tableData;
       for (let i = 0;i < data.length; i++) {
-        data[i].total = data[i].price * data[i].amount;
+        data[i].total_price = data[i].price * data[i].amount;
       }
       this.submitVisible = !this.submitVisible;
 

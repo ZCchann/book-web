@@ -55,7 +55,6 @@ export default {
 
   methods: {
     onUpload(UploadFile) {
-      console.log(UploadFile)
       this.tableData = UploadFile.data;
       this.$refs.upload.clearFiles();
 
