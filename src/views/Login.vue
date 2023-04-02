@@ -43,7 +43,6 @@ export default {
                 this.$router.push({name: 'home'})
               })
               .catch(data => {
-                console.log(data.response.status)
                 this.errMsg = data.response.data
               })
         }

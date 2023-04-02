@@ -16,7 +16,7 @@
       <el-table-column prop="author" label="作者" width="120"/>
       <el-table-column prop="publication_date" label="出版日" :formatter="formatterDate"/>
       <el-table-column prop="amount" label="数量"/>
-      <el-table-column prop="total" label="总价"/>
+      <el-table-column prop="total_price" label="总价"/>
     </el-table>
 
     <el-button

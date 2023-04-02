@@ -92,16 +92,58 @@ export const createOrder = (data) => {
 }
 
 export const getOrder = () => {
-    return http.get('/order/get_order',{
-        params:{
-            uuid:getStorage("uuid")
+    return http.get('/order/get_order', {
+        headers: {
+            uuid: getStorage("uuid")
         }
     })
 }
 export const getOrderDetails = (orderNumber) => {
-    return http.get('/order/get_order_details',{
+    return http.get('/order/get_order_details', {
+        params: {
+            number: orderNumber
+        }
+    })
+}
+
+export const AddUserAddress = (data) => {
+    const headers = {
+        headers: {uuid: getStorage("uuid")}
+    }
+    return http.post('/user/add_user_address', data, headers)
+}
+export const getUserAllAddress = () => {
+    return http.get('/user/get_user_all_address', {
+        headers: {
+            uuid: getStorage("uuid")
+        }
+    })
+}
+export const getUserAddress = (address_id) => {
+    return http.get('/user/get_user_address', {
+        headers: {
+            uuid: getStorage("uuid")
+        },
+        params: {
+            address_id: address_id
+        }
+    })
+}
+
+export const updateUserAddress = (data) => {
+    return http.post('/user/update_address', data, {
+        headers: {
+            uuid: getStorage("uuid")
+        }
+    })
+}
+export const deleteUserAddress = (address_id) => {
+    return http.delete('/user/del_address', {
+        headers: {
+            uuid: getStorage("uuid")
+        },
         params:{
-            number:orderNumber
+            address_id:address_id
         }
     })
 }

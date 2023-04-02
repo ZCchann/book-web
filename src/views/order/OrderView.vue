@@ -19,6 +19,7 @@
   <orderList
       :visible="orderListVisible"
       :orderNumber="orderNumber"
+      :formatterDate="formatterDate"
       @update:visible="orderListVisible = $event"/>
 </template>
 
