@@ -38,7 +38,7 @@
     <el-card class="user-address">
       <el-form :model="addressForm" ref="form" label-width="120px">
         <el-col :span="8">
-          <el-form-item prop="name"
+          <el-form-item prop="addressee"
                         label="收件人"
                         :rules="[{
               required: true,
@@ -46,7 +46,7 @@
               trigger: 'blur',
             }] "
           >
-            <el-input v-model=" addressForm.name" required/>
+            <el-input v-model=" addressForm.addressee" required/>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -89,7 +89,7 @@
 
 
         <el-table :data="addressTable" style="width: 100%" height="352">
-          <el-table-column prop="name" label="收件人" width="180"/>
+          <el-table-column prop="addressee" label="收件人" width="180"/>
           <el-table-column prop="telephone" label="电话" width="180"/>
           <el-table-column prop="address" label="地址"/>
           <el-table-column label="编辑">
@@ -140,8 +140,8 @@ export default {
       },
       showPassword: false,
       addressForm: {
-        address_id: "",
-        name: "", //收件人
+        address_id: undefined,
+        addressee: "", //收件人
         address: "",  //地址
         telephone: "" //收件电话
       },
@@ -178,6 +178,7 @@ export default {
       this.addressForm.address = loc;
     },
     submitAddress() {
+      console.log(this.addressForm)
       AddUserAddress(this.addressForm).then(() => {
             ElMessage({
               type: 'success',

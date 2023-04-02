@@ -32,6 +32,7 @@
         border
         style="width: 100%"
         height="790"
+        ref="form"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column prop="isbn" label="ISBN" width="140"/>
@@ -76,8 +77,9 @@
       :visible="submitVisible"
       :formatterDate="formatterDate"
       :restrictionFormat="restrictionFormat"
-      :orderDate="tableData"
+      :orderData="tableData"
       @update:visible="submitVisible = $event"
+      @update:orderDate="tableData = $event"
   />
 
 

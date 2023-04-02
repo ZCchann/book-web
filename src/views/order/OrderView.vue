@@ -2,7 +2,9 @@
   <el-table :data="orderData" border style="width: 100%">
     <el-table-column prop="number" label="订单号" width="260"/>
     <el-table-column prop="create_time" label="下单时间" :formatter="formatterDate" width="180"/>
-    <el-table-column prop="status" label="订单状态"/>
+    <el-table-column prop="addressee" label="收件人"/>
+    <el-table-column prop="telephone" label="电话"/>
+    <el-table-column prop="address" label="收件地址"/>
     <el-table-column fixed="right" label="订单详情" width="200">
       <template #default="scope">
         <el-button
@@ -35,14 +37,13 @@ export default {
     return {
       orderData: [],
       orderListVisible: false,
-      orderNumber:undefined
+      orderNumber: undefined
     }
   },
   methods: {
     formatterDate,
     getAllOrder() {
       getOrder().then(({data}) => {
-
             this.orderData = data
           }
       )

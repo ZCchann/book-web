@@ -36,7 +36,7 @@
       <el-table-column prop="author" label="作者" width="120"/>
       <el-table-column prop="publication_date" label="出版日" :formatter="formatterDate"/>
 
-      <el-table-column label="编辑">
+      <el-table-column label="单条添加">
         <template #default="scope">
           <el-button size="small" @click="tableHandleAdd(scope.row)" type="primary">添加</el-button>
         </template>

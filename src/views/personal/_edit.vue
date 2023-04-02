@@ -3,14 +3,14 @@
 
     <el-form ref="form" :model="addressForm" label-width="120px">
       <el-col :span="12">
-        <el-form-item prop="name"
+        <el-form-item prop="addressee"
                       label="收件人"
                       :rules="[{
               required: true,
               message: '请输入收件人',
               trigger: 'blur',
             }]">
-          <el-input v-model=" addressForm.name" required/>
+          <el-input v-model=" addressForm.addressee" required/>
         </el-form-item>
       </el-col>
 
@@ -61,7 +61,7 @@ export default {
       drawer: false,
       addressForm: {
         address_id: undefined,
-        name: "", //收件人
+        addressee: "", //收件人
         address: "",  //地址
         telephone: "" //收件电话
       },
