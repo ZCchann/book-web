@@ -81,6 +81,10 @@
       @update:visible="submitVisible = $event"
       @update:orderDate="tableData = $event"
   />
+  <ImportView
+      :visible="importVisible"
+      @update:visible="importVisible = $event"
+  />
 
 
 </template>
@@ -91,12 +95,13 @@ import {ElMessageBox} from 'element-plus'
 import {Delete, DocumentAdd, Plus, Search} from "@element-plus/icons-vue";
 import AddOrder from "./_add.vue";
 import Submit from "./_submit.vue";
+import ImportView from "./_import.vue";
 import {formatterDate, restrictionFormat} from "@/utils/format";
 
 
 export default {
   name: "NewOrder",
-  components: {AddOrder, Submit},
+  components: {AddOrder, Submit,ImportView},
   computed: {
     DocumentAdd() {
       return DocumentAdd

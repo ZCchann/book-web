@@ -6,7 +6,7 @@
       </div>
       <el-button @click="exportExcel" type="primary">导出订单</el-button>
     </template>
-
+    <el-text class="w-100px" style="white-space: pre-wrap;" id="addr" >{{address}}</el-text>
     <el-table
         :data="orderDate"
         border style="width: 100%"
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import {getOrderDetails} from "@/api";
+import {getOrderDetails, getUserAddress} from "@/api";
 import FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 
@@ -43,12 +43,17 @@ export default {
     orderNumber: {
       type: String,
       default: undefined
+    },
+    addressID: {
+      type: Number,
+      default: undefined
     }
   },
   data() {
     return {
       drawer: false,
-      orderDate: []
+      orderDate: [],
+      address:[]
     }
   },
   methods: {
@@ -82,13 +87,36 @@ export default {
       } else {
         wb = XLSX.utils.table_to_book(document.querySelector("#tableId"), xlsxParam);
       }
+      let ws = wb.Sheets["Sheet1"];
+
+      // 获取表格的最大行数和最大列数
+      let range = XLSX.utils.decode_range(ws['!ref']);
+      let maxRow = range.e.r + 1;
+      let maxCol = range.e.c + 1;
+      // 将数据写入表格的最后一行
+      let newRow = maxRow + 1;
+
+      let TitleList = ["收件人","联系电话","收件地址"]
+      for (let i = 0; i < this.address.length; i++) {
+        const title = XLSX.utils.encode_cell({ r: newRow, c: 0 });
+        ws[title] = { t: 's', v: TitleList[i] };
+
+        const cell = XLSX.utils.encode_cell({ r: newRow, c: 1 });
+        ws[cell] = { t: 's', v: this.address[i] };
+
+        newRow +=1
+      }
+
+      //更新表格范围
+      ws['!ref'] = XLSX.utils.encode_range({ s: range.s, e: { r: newRow, c: maxCol } });
+
       let wbout = XLSX.write(wb, {
         bookType: "xlsx",
         bookSST: true,
         type: "array",
       });
       try {
-        let filename=this.orderNumber +"订单详情.xlsx"
+        let filename = this.orderNumber + "订单详情.xlsx"
         FileSaver.saveAs(
             new Blob([wbout], {type: "application/octet-stream"}),
             filename
@@ -104,9 +132,15 @@ export default {
       this.drawer = val;
       if (val && this.orderNumber) {
         getOrderDetails(this.orderNumber).then(({data}) => {
-              this.orderDate = data;
-            }
-        )
+          this.orderDate = data;
+        })
+        getUserAddress(this.addressID).then(({data}) => {
+          this.address.push(data.addressee)
+          this.address.push(data.telephone)
+          this.address.push(data.address)
+
+        })
+
       }
     }
   }

@@ -65,7 +65,6 @@
                 :options="options"
                 v-model="selectedOptions"
                 @change="handleChange"
-                clearable
                 filterable
                 style="width:100%"
             >
@@ -170,7 +169,8 @@ export default {
           }
       )
     },
-    handleChange() {
+    handleChange(val) {
+      console.log(val)
       let loc = "";
       for (let i = 0; i < this.selectedOptions.length; i++) {
         loc += CodeToText[this.selectedOptions[i]];
@@ -178,7 +178,6 @@ export default {
       this.addressForm.address = loc;
     },
     submitAddress() {
-      console.log(this.addressForm)
       AddUserAddress(this.addressForm).then(() => {
             ElMessage({
               type: 'success',
