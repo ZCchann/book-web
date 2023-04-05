@@ -1,61 +1,61 @@
 import axios from 'axios'
-import { ElMessage } from "element-plus";
+import {ElMessage} from "element-plus";
 import router from "@/router";
-// import { getStorage } from "@/utils/browser";
+import {getStorage} from "@/utils/browser";
 
 
-export default ({ baseURL }) => {
-  const http = axios.create({
-    baseURL,
-    headers: {
-      'Content-Type': 'application/json;charset=utf-8',
-    },
-    timeout: 30000,
-    // 是否跨站点访问控制请求
-    // withCredentials: true,
-    responseType: 'json',
-  })
+export default ({baseURL}) => {
+    const http = axios.create({
+        baseURL,
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+        },
+        timeout: 30000,
+        // 是否跨站点访问控制请求
+        // withCredentials: true,
+        responseType: 'json',
+    })
 
-//   // 请求拦截
-//   http.interceptors.request.use(
-//     (config) => {
-//       const jwt = getStorage('jwt')
-//       jwt && (config.headers.Authorization = jwt)
-//       return config
-//     },
-//     (err) => {
-//       console.log('请求拦截err:', err)
-//       return Promise.error(err)
-//     }
-//   )
-
-  // 返回拦截
-  http.interceptors.response.use(
-    (response) => {
-      return response.data
-    },
-    // 处理异常响应
-    (err) => {
-      if (err.response) {
-        if (err.response.status === 401) {
-          localStorage.clear()
-          router.push('login')
-        } else {
-          ElMessage({
-            type: 'error',
-            message: `${ err.response.status }，${ err.response.data.message }`
-          })
+    // 请求拦截
+    http.interceptors.request.use(
+        (config) => {
+            const jwt = getStorage('jwt')
+            jwt && (config.headers.Authorization = jwt)
+            return config
+        },
+        (err) => {
+            console.log('请求拦截err:', err)
+            return Promise.error(err)
         }
-      } else {
-        ElMessage({
-          type: 'error',
-          message: `错误:${ err.message }`
-        })
-      }
-      return Promise.reject(err)
-    }
-  )
-  return http
+    )
+
+    // 返回拦截
+    http.interceptors.response.use(
+        (response) => {
+            return response.data
+        },
+        // 处理异常响应
+        (err) => {
+            if (err.response) {
+                if (err.response.status === 401) {
+                    localStorage.clear()
+                    router.push('login')
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        message: `${err.response.status}，${err.response.data.message}`
+                    })
+                }
+            } else {
+                ElMessage({
+                    type: 'error',
+                    message: `错误:${err.message}`
+                })
+            }
+            return Promise.reject(err)
+        }
+    )
+    return http
 }
 
 // const showStatus = (status) => {

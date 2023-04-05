@@ -119,8 +119,6 @@ export default {
         address: "",
         address_id: undefined
       }
-
-
     }
   },
   methods: {
@@ -142,7 +140,14 @@ export default {
       return sums
     },
     stepNext() {
-      this.active++;
+      if (this.checkForm.address === "") {
+        ElMessage({
+          type: 'error',
+          message: ("你还没有选择地址！！！"),
+        })
+      } else {
+        this.active++;
+      }
     },
     stepSub() {
       this.active--;

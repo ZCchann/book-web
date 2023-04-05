@@ -3,11 +3,33 @@
     <el-menu default-active="1" class="el-menu-vertical-demo" router>
 
       <template v-for="i in getRouter">
-        <el-menu-item  :index="i.path">
+
+        <!--    第一层      -->
+        <el-sub-menu v-if="i.children" :index="i.name">
+          <template #title>
+            <el-icon>
+              <Menu/>
+            </el-icon>
+            <span>{{ i.meta.title }}</span>
+          </template>
+          <el-menu-item-group>
+
+            <el-menu-item
+                v-for="c in i.children"
+                :index="c.path">
+              {{ c.meta.title }}
+            </el-menu-item>
+
+          </el-menu-item-group>
+        </el-sub-menu>
+
+
+        <el-menu-item v-else :index="i.path">
           {{ i.meta.title }}
         </el-menu-item>
+
       </template>
-      
+
     </el-menu>
   </el-aside>
 </template>

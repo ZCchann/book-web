@@ -39,10 +39,10 @@ export default {
     visible(val) {
       this.drawer = val;
 
-    }
-  }
+        }
+      }
 
-}
+    }
 </script>
 
 <style scoped>

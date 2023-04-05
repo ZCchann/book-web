@@ -153,7 +153,7 @@ export default {
     }
   },
   methods: {
-    getData() {
+    async getData() {
       let uuid = getStorage('uuid');
       getOneUserData(uuid).then(({data}) => {
         this.form = data
@@ -189,7 +189,7 @@ export default {
       )
 
     },
-    getAddress() {
+    async getAddress() {
       getUserAllAddress().then(({data}) => {
         this.addressTable = data
       })

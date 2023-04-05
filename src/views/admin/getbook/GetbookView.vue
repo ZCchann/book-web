@@ -69,8 +69,8 @@
 import {getAllData, delData, searchData} from "@/api";
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Delete, DocumentAdd, Plus, Search} from "@element-plus/icons-vue";
-import GetBookEdit from "@/views/getbook/_edit.vue";
-import ImportForm from "@/views/getbook/_import.vue";
+import GetBookEdit from "@/views/admin/getbook/_edit.vue";
+import ImportForm from "@/views/admin/getbook/_import.vue";
 import {formatterDate, restrictionFormat} from "@/utils/format";
 
 
