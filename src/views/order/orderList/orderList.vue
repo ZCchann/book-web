@@ -6,7 +6,6 @@
       </div>
       <el-button @click="exportExcel" type="primary">导出订单</el-button>
     </template>
-    <el-text class="w-100px" style="white-space: pre-wrap;" id="addr" >{{address}}</el-text>
     <el-table
         :data="orderDate"
         border style="width: 100%"
@@ -31,7 +30,7 @@
 </template>
 
 <script>
-import {getOrderDetails, getUserAddress} from "@/api";
+import {getOrderDetails} from "@/api";
 import FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 
@@ -44,8 +43,8 @@ export default {
       type: String,
       default: undefined
     },
-    addressID: {
-      type: Number,
+    Information: {
+      type: Object,
       default: undefined
     }
   },
@@ -53,7 +52,7 @@ export default {
     return {
       drawer: false,
       orderDate: [],
-      address:[]
+      address: []
     }
   },
   methods: {
@@ -96,19 +95,19 @@ export default {
       // 将数据写入表格的最后一行
       let newRow = maxRow + 1;
 
-      let TitleList = ["收件人","联系电话","收件地址"]
+      let TitleList = ["收件人", "联系电话", "收件地址"]
       for (let i = 0; i < this.address.length; i++) {
-        const title = XLSX.utils.encode_cell({ r: newRow, c: 0 });
-        ws[title] = { t: 's', v: TitleList[i] };
+        const title = XLSX.utils.encode_cell({r: newRow, c: 0});
+        ws[title] = {t: 's', v: TitleList[i]};
 
-        const cell = XLSX.utils.encode_cell({ r: newRow, c: 1 });
-        ws[cell] = { t: 's', v: this.address[i] };
+        const cell = XLSX.utils.encode_cell({r: newRow, c: 1});
+        ws[cell] = {t: 's', v: this.address[i]};
 
-        newRow +=1
+        newRow += 1
       }
 
       //更新表格范围
-      ws['!ref'] = XLSX.utils.encode_range({ s: range.s, e: { r: newRow, c: maxCol } });
+      ws['!ref'] = XLSX.utils.encode_range({s: range.s, e: {r: newRow, c: maxCol}});
 
       let wbout = XLSX.write(wb, {
         bookType: "xlsx",
@@ -134,12 +133,10 @@ export default {
         getOrderDetails(this.orderNumber).then(({data}) => {
           this.orderDate = data;
         })
-        getUserAddress(this.addressID).then(({data}) => {
-          this.address.push(data.addressee)
-          this.address.push(data.telephone)
-          this.address.push(data.address)
 
-        })
+        this.address.push(this.Information.name)
+        this.address.push(this.Information.telephone)
+        this.address.push(this.Information.address)
 
       }
     }

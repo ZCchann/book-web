@@ -22,7 +22,7 @@
       :visible="orderListVisible"
       :orderNumber="orderNumber"
       :formatterDate="formatterDate"
-      :address-ID="addressID"
+      :Information="Information"
       @update:visible="orderListVisible = $event"/>
 </template>
 
@@ -39,7 +39,11 @@ export default {
       orderData: [],
       orderListVisible: false,
       orderNumber: undefined,
-      addressID:undefined
+      Information:{
+        name:"",
+        telephone:"",
+        address:""
+      }
     }
   },
   methods: {
@@ -51,9 +55,14 @@ export default {
       )
     },
     tableHandleDetailed(row) {
+      console.log(row)
       this.orderListVisible = !this.orderListVisible;
       this.orderNumber = row.number;
-      this.addressID = row.address_id;
+      this.Information.name = row.addressee;
+      this.Information.telephone = row.telephone;
+      this.Information.address = row.address;
+
+
     }
 
   },

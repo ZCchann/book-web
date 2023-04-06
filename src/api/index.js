@@ -70,12 +70,14 @@ export const addData = (data) => {
     return http.post('/book/addData', data)
 }
 
-export const searchData = (title, page, pageSize) => {
+export const searchData = (title, page, pageSize,start_time,end_time) => {
     return http.get('/book/search/', {
         params: {
             title: title,
             page: page,
-            pagesize: pageSize
+            pagesize: pageSize,
+            start_time:start_time,
+            end_time:end_time
         }
     })
 }

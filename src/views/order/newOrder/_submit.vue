@@ -111,13 +111,14 @@ export default {
       addressTable: [],
       submitForm: {
         order_data: undefined,
-        address_id: undefined,
+        addressee: "",
+        telephone: "",
+        address: "",
       },
       checkForm: {
         addressee: "",
         telephone: "",
         address: "",
-        address_id: undefined
       }
     }
   },
@@ -154,7 +155,9 @@ export default {
     },
     submit() {
       this.submitForm.order_data = this.orderData;
-      this.submitForm.address_id = this.checkForm.address_id;
+      this.submitForm.addressee = this.checkForm.addressee;
+      this.submitForm.telephone = this.checkForm.telephone;
+      this.submitForm.address = this.checkForm.address;
 
       createOrder(this.submitForm).then(() => {
         ElMessage({

@@ -13,6 +13,18 @@
         </el-input>
       </el-col>
 
+      <el-col :span="6">
+        <el-date-picker
+            v-model="time"
+            type="daterange"
+            range-separator="To"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            size="large"
+            value-format="X"
+        />
+
+      </el-col>
       <!--   搜索框旁按钮   -->
       <el-col :span="6">
         <el-button type="primary" size="large" :icon="Plus" @click="tableHandleAdd">新增
@@ -23,17 +35,18 @@
         </el-button>
       </el-col>
 
+
     </el-row>
     <el-table :data="tableData" @selection-change="tableHandleSelectionChange" border style="width: 100%" height="790">
       <el-table-column type="selection" width="55"/>
       <el-table-column prop="isbn" label="ISBN" width="140"/>
       <el-table-column prop="tittle" label="书名"/>
       <el-table-column prop="price" label="标价" width="80"/>
-      <el-table-column prop="press" label="出版社" width="120"/>
-      <el-table-column prop="type" label="类型" width="120"/>
-      <el-table-column prop="restriction" label="是否为限制级" width="120" :formatter="restrictionFormat" />
+      <el-table-column prop="press" label="出版社" width="120" sortable/>
+      <el-table-column prop="type" label="类型" width="120" sortable/>
+      <el-table-column prop="restriction" label="是否为限制级" width="120" :formatter="restrictionFormat"/>
       <el-table-column prop="author" label="作者" width="120"/>
-      <el-table-column prop="publication_date" label="出版日" :formatter="formatterDate">
+      <el-table-column prop="publication_date" label="出版日" :formatter="formatterDate" sortable>
       </el-table-column>
       <el-table-column label="编辑">
         <template #default="scope">
@@ -94,6 +107,7 @@ export default {
   },
   data() {
     return {
+      time: [],
       tableData: [],
       page: 1,
       currentPage: 1,
@@ -184,10 +198,21 @@ export default {
     },
 
     search() {
+      let start;
+      let end;
+      //一个bug 日期选择器清空时 V-model会变为null 需要重新赋值
+      if (this.time == null) {
+        this.time = undefined
+      }
+      if (this.time !== undefined) {
+        start = this.time[0]
+        end = this.time[1]
+      }
+
       if (this.searchInput === "") {
         this.getAllData()
       } else {
-        searchData(this.searchInput, this.page, this.pageSize).then(
+        searchData(this.searchInput, this.page, this.pageSize, start, end).then(
             (data) => {
               this.tableData = data.data;
               this.total = data.total;
