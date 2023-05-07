@@ -9,6 +9,9 @@ export const http = axios({
 export const login = ({username, password}) => {
     return http.post('/login', {username, password})
 }
+export const logout = ({username, password}) => {
+    return http.post('/logout', {username, password})
+}
 
 export const getAllUser = (page, pagesize) => {
     return http.get('/user/getAllUser', {

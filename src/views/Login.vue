@@ -41,43 +41,44 @@ export default {
                 setStorage('user', this.loginForm.username)
                 setStorage('uuid', data.uuid)
                 setStorage('jwt', data.jwt)
-                store.commit("set_username", this.loginForm.username)
-
-                this.$router.addRoute("home", {
-                  path: '/personal',
-                  name: 'PersonalView',
-                  meta: {
-                    title: "个人信息",
-                  },
-                  component: () => import('@/views/personal/PersonalView.vue')
+                // store.commit("set_username", this.loginForm.username)
+                // this.$router.addRoute("home", {
+                //   path: '/personal',
+                //   name: 'PersonalView',
+                //   meta: {
+                //     title: "个人信息",
+                //   },
+                //   component: () => import('@/views/personal/PersonalView.vue')
+                // })
+                // // this.$router.addRoute("home", )
+                // this.$router.addRoute("home", {
+                //           path: '/admin',
+                //           name: 'adminMenu',
+                //           meta: {title: "管理员菜单"},
+                //           children: [
+                //               {
+                //                   path: '/alldata',
+                //                   name: 'AllData',
+                //                   meta: {
+                //                       title: "数据管理"
+                //                   },
+                //                   component: () => import('@/views/admin/getbook/GetbookView.vue')
+                //               },
+                //               {
+                //                   path: '/user',
+                //                   name: 'User',
+                //                   meta: {
+                //                       title: "用户管理"
+                //                   },
+                //                   component: () => import('@/views/admin/user/UserView.vue')
+                //               },
+                //           ]
+                //       },)
+                store.dispatch("login").then(() => {
+                  console.log("登陆跳转")
+                  // router.push({ path: "/home" })
+                  this.$router.replace("/index")
                 })
-                // this.$router.addRoute("home", )
-                this.$router.addRoute("home", {
-                          path: '/admin',
-                          name: 'adminMenu',
-                          meta: {title: "管理员菜单"},
-                          children: [
-                              {
-                                  path: '/alldata',
-                                  name: 'AllData',
-                                  meta: {
-                                      title: "数据管理"
-                                  },
-                                  component: () => import('@/views/admin/getbook/GetbookView.vue')
-                              },
-                              {
-                                  path: '/user',
-                                  name: 'User',
-                                  meta: {
-                                      title: "用户管理"
-                                  },
-                                  component: () => import('@/views/admin/user/UserView.vue')
-                              },
-                          ]
-                      },)
-
-
-                this.$router.replace("/index")
               })
               .catch(data => {
                 this.errMsg = data.response.data
