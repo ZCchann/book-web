@@ -49,6 +49,8 @@ export default {
       const m = this.$router.getRoutes().filter(i => {
         return i.name === "home"
       });
+      console.log("m  ",m)
+      console.log("m len ",m.length)
       if (m.length > 0) {
         return m[0].children
       } else {
