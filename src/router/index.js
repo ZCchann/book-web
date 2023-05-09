@@ -15,7 +15,7 @@ export const routes = [
                 name: 'Index',
                 meta: {
                     title: "首页",
-                isTrue: 1
+                    isTrue: 1
                 },
                 component: () => import('../views/index/index.vue')
             },
@@ -24,7 +24,7 @@ export const routes = [
                 name: 'PersonalView',
                 meta: {
                     title: "个人信息",
-                isTrue: 1
+                    isTrue: 1
                 },
                 component: () => import('@/views/personal/PersonalView.vue')
             },
@@ -113,14 +113,9 @@ router.beforeEach(async (to, from, next) => {
     console.log("index是否存在 ", router.hasRoute('Index')) //检查路由是否存在
     console.log("用户详情页是否存在 ", router.hasRoute('PersonalView')) //检查路由是否存在
     console.log("router: ", router.getRoutes())
-
-    if (to.path === "/logout") {
-        localStorage.clear()
-        await store.dispatch("delRoute")
-
-        next("/login")
-    }
-
+    console.log("to path: ", to.path)
+    console.log("userInfo: ", store.getters.getuserInfo.routerList.length)
+    console.log("localstorage: ", localStorage.getItem('userRouter'))
     let user = getStorage("user") //测试  获取user是否存在
     if (!user) {
         // 若user不存在 强制跳转login页面
@@ -131,6 +126,9 @@ router.beforeEach(async (to, from, next) => {
         }
     } else {
         // 浏览器中已存在user 跳转至path的目标
+
+        // if ()
+
         // todo: 有个bug需要修复 需要检测jwt token是否过期
         await store.dispatch("addRoute")
         next()

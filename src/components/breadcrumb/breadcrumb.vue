@@ -10,19 +10,21 @@
     </div>
 
     <el-dropdown>
-        <el-button type="primary">
-          个人中心
-          <el-icon class="el-icon--right"><arrow-down /></el-icon>
-        </el-button>
+      <el-button type="primary">
+        个人中心
+        <el-icon class="el-icon--right">
+          <arrow-down/>
+        </el-icon>
+      </el-button>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item
               @click="toPersonal"
-          >个人信息</el-dropdown-item>
-          <el-dropdown-item>
-            <router-link to="/logout">
+          >个人信息
+          </el-dropdown-item>
+          <el-dropdown-item
+              @click="logOut">
             退出登录
-            </router-link>
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
@@ -34,6 +36,8 @@
 <script>
 import {ArrowDown, ArrowRight, Setting} from '@element-plus/icons-vue'
 import {defineComponent} from "vue";
+import store from "@/store";
+import {logout} from "@/api";
 
 export default defineComponent({
   components: {ArrowDown, Setting},
@@ -45,6 +49,14 @@ export default defineComponent({
   methods: {
     toPersonal() {
       this.$router.replace("/personal")
+    },
+    logOut() {
+      logout().then(() => {
+        localStorage.clear()
+        store.dispatch("delRoute")
+        this.$router.replace("/login")
+      })
+
     }
   },
   mounted() {

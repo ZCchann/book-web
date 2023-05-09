@@ -4,9 +4,6 @@ import router, {authRouter} from "@/router";
 export default createStore({
     state: {
         userInfo: {
-            // username: "",
-            // uuid: "",
-            // jwt: "",
             routerList: []
         }
     },
@@ -16,9 +13,6 @@ export default createStore({
         }
     },
     mutations: {
-        // set_username(state, val) {
-        //     state.userInfo.username = val;
-        // }
         set_routerList(state, val) {
             state.userInfo.routerList = val;
         },
