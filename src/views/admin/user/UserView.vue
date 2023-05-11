@@ -59,6 +59,7 @@
         <el-table-column type="selection" width="55"/>
         <el-table-column prop="username" label="用户名"/>
         <el-table-column prop="email" label="邮箱"/>
+        <el-table-column prop="authorityid" label="权限" :formatter="permissionsFormat" />
         <el-table-column label="编辑">
           <template #default="scope">
             <el-button size="small" @click="tableHandleEdit(scope.row)">Edit</el-button>
@@ -83,6 +84,7 @@ import {Delete, Plus, Search} from "@element-plus/icons-vue";
 import {ElMessage, ElMessageBox} from 'element-plus'
 import UserEdit from "./_edit.vue"
 import {getAllUser, delUser, searchUserData} from "@/api";
+import {permissionsFormat} from "@/utils/format";
 
 export default {
   name: "UserView.vue",
@@ -114,6 +116,7 @@ export default {
     }
   },
   methods: {
+    permissionsFormat,
     getData() {
       this.search()
     },

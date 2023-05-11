@@ -73,14 +73,14 @@ export const addData = (data) => {
     return http.post('/book/addData', data)
 }
 
-export const searchData = (title, page, pageSize,start_time,end_time) => {
+export const searchData = (title, page, pageSize, start_time, end_time) => {
     return http.get('/book/search/', {
         params: {
             title: title,
             page: page,
             pagesize: pageSize,
-            start_time:start_time,
-            end_time:end_time
+            start_time: start_time,
+            end_time: end_time
         }
     })
 }
@@ -147,8 +147,21 @@ export const deleteUserAddress = (address_id) => {
         headers: {
             uuid: getStorage("uuid")
         },
-        params:{
-            address_id:address_id
+        params: {
+            address_id: address_id
+        }
+    })
+}
+
+//权限管理
+export const get_permissions_id_name = () => {
+    return http.get('/permissions/get_permissions_id_name')
+}
+
+export const get_permissions_by_id = (permissions_id) => {
+    return http.get('/permissions/get_permissions_by_id', {
+        params: {
+            permissions_id: permissions_id
         }
     })
 }

@@ -72,6 +72,14 @@ export const authRouter = [
                 },
                 component: () => import('@/views/admin/user/UserView.vue')
             },
+            {
+                path: '/permissions',
+                name: 'Permissions',
+                meta: {
+                    title: "权限管理"
+                },
+                component: () => import('@/views/admin/permissions/permissions.vue')
+            }
         ]
     },
     {
@@ -109,13 +117,16 @@ const router = createRouter({
     routes
 })
 
+// 处理动态引入组件函数
+
+
 router.beforeEach(async (to, from, next) => {
-    console.log("index是否存在 ", router.hasRoute('Index')) //检查路由是否存在
-    console.log("用户详情页是否存在 ", router.hasRoute('PersonalView')) //检查路由是否存在
+    console.log("index是否存在 ", router.hasRoute('Alldata')) //检查路由是否存在
+    // console.log("用户详情页是否存在 ", router.hasRoute('PersonalView')) //检查路由是否存在
     console.log("router: ", router.getRoutes())
     console.log("to path: ", to.path)
-    console.log("userInfo: ", store.getters.getuserInfo.routerList.length)
-    console.log("localstorage: ", localStorage.getItem('userRouter'))
+    console.log("to name " ,to.name)
+
     let user = getStorage("user") //测试  获取user是否存在
     if (!user) {
         // 若user不存在 强制跳转login页面
@@ -126,11 +137,8 @@ router.beforeEach(async (to, from, next) => {
         }
     } else {
         // 浏览器中已存在user 跳转至path的目标
-
-        // if ()
-
-        // todo: 有个bug需要修复 需要检测jwt token是否过期
         await store.dispatch("addRoute")
+        console.log("to name2 " ,to.name)
         next()
     }
 })
