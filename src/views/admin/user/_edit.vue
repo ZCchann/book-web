@@ -24,14 +24,21 @@
         <el-input v-model="form.email"/>
       </el-form-item>
 
-
       <el-form-item label="密码" prop="password">
         <el-input v-model="form.password" type="password" show-password/>
       </el-form-item>
       <el-button type="primary" @click="generateRandomString">生成随机密码</el-button>
-
+      <el-form-item label="权限">
+        <el-select v-model="form.permissions" class="m-2" placeholder="Select">
+          <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
     </el-form>
-
     <el-button type="success" @click="submit">提交</el-button>
     <el-button type="info" @click="dialogClose">取消</el-button>
   </el-dialog>
@@ -50,7 +57,8 @@ export default {
       type: String,
       default: undefined
     },
-    onSuccess: Function
+    onSuccess: Function,
+    PermissionsList:Array
   },
   data() {
     return {
@@ -59,8 +67,10 @@ export default {
         username: "",
         password: "",
         email: "",
+        permissions:0
       },
-      resetPassword: false
+      resetPassword: false,
+      options:[]
     }
   },
   methods: {
@@ -78,8 +88,10 @@ export default {
     },
     //关闭当前页面
     dialogClose() {
-      this.$refs.form.resetFields();
-      this.$emit('update:visible', false);
+      this.$refs.form.resetFields()
+      this.options = []
+      this.$emit('update:visible', false)
+
     },
     submit() {
       if (this.buttonType === "Add") {
@@ -109,6 +121,14 @@ export default {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
       }
       this.form.password = result;
+    },
+    toOptions() {
+      this.PermissionsList.forEach((i) => {
+        this.options.push({
+          value:i.id,
+          label:i.rulename
+        })
+      })
     }
   },
   watch: {
@@ -117,6 +137,7 @@ export default {
       if (val && this.dataID) {
         this.getInfo(this.dataID)
       }
+      this.toOptions()
     }
   }
 }

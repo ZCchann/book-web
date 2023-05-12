@@ -75,6 +75,7 @@
       :dataID="dataId"
       :on-Success="getAllData"
       :button-Type="buttonType"
+      :PermissionsList="PermissionsList"
       @update:visible="formVisible = $event"
   />
 </template>
@@ -208,6 +209,7 @@ export default {
     getAllPermissions() {
       get_permissions_id_name().then(data => {
         this.PermissionsList = data.data
+        console.log(data.data)
       })
     }
   },
