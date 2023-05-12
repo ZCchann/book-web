@@ -1,7 +1,6 @@
 import {createStore} from 'vuex'
-import router, {authRouter} from "@/router";
+import router from "@/router";
 import {getNav} from "@/api/getnav";
-import createPersistedState from 'vuex-persistedstate'
 
 
 export default createStore({
@@ -19,32 +18,6 @@ export default createStore({
         set_routerList(state, val) {
             state.userInfo.routerList = val;
         },
-        add_route(status) {
-            const getComponent = (data) => {
-                data.map(item => {
-                    if (item.children) {
-                        item.children.forEach((i) => {
-                            let imp = i.component
-                            i.component = () => import (`@/views/${imp}`)
-                        })
-                    }else{
-                        let imp = item.component
-                        item.component.component = () => import (`@/views/${imp}`)
-                    }
-                })
-                return data
-            }
-
-            console.log("路由添加前", router.getRoutes())
-            if (router.getRoutes().length === 5) {
-                let routers = JSON.parse(JSON.stringify(status.userInfo.routerList))
-                let routerList = getComponent(routers)
-                routerList.forEach((i) => {
-                    router.addRoute('home', i)
-                })
-            }
-            console.log("路由添加后", router.getRoutes())
-        },
         reset_userInfo(state) {
             state.userInfo = {
                 routerList: []
@@ -53,19 +26,23 @@ export default createStore({
 
     },
     actions: {
+        routerInit({commit}) {
+            commit(
+                'add_route'
+            )
+        },
         login({commit}) {
             return new Promise((resolve) => {
                 // 存储路由表到vuex
                 getNav().then(data => {
                     console.log(data.data)
-                    // let routers = JSON.parse(JSON.stringify(data))
                     commit("set_routerList", data.data)
                     resolve()
                 })
 
             })
         },
-        logout({ commit, state }) {
+        logout({commit, state}) {
             return new Promise((resolve) => {
                 //拷贝一下
                 const delRouterList = JSON.parse(
@@ -91,5 +68,5 @@ export default createStore({
         }
     },
     modules: {},
-    plugins: [createPersistedState()] //加载vuex持久化插件 实现刷新页面路由不丢失
+    // plugins: [createPersistedState()] //加载vuex持久化插件 实现刷新页面路由不丢失
 })
