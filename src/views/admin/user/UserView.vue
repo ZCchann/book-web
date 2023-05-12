@@ -59,6 +59,7 @@
         <el-table-column type="selection" width="55"/>
         <el-table-column prop="username" label="用户名"/>
         <el-table-column prop="email" label="邮箱"/>
+        <el-table-column prop="authorityid" label="权限" :formatter="permissionsFormat"/>
         <el-table-column label="编辑">
           <template #default="scope">
             <el-button size="small" @click="tableHandleEdit(scope.row)">Edit</el-button>
@@ -82,7 +83,8 @@
 import {Delete, Plus, Search} from "@element-plus/icons-vue";
 import {ElMessage, ElMessageBox} from 'element-plus'
 import UserEdit from "./_edit.vue"
-import {getAllUser, delUser, searchUserData} from "@/api";
+import {getAllUser, delUser, searchUserData, get_permissions_id_name} from "@/api";
+import {getRuleNameById} from "@/utils/format";
 
 export default {
   name: "UserView.vue",
@@ -109,11 +111,15 @@ export default {
       formVisible: false,
       buttonType: "",//窗口状态
       searchInput: "", //搜索框文本
-      SelectionList: [] //多选框列表
-
+      SelectionList: [], //多选框列表
+      PermissionsList: []
     }
   },
   methods: {
+    permissionsFormat(row, column, value) {
+      //权限名称清洗 将权限ID转换为权限名称
+      return getRuleNameById(value, this.PermissionsList)
+    },
     getData() {
       this.search()
     },
@@ -199,10 +205,15 @@ export default {
     tableHandleSelectionChange(val) {
       this.SelectionList = val;
     },
-
+    getAllPermissions() {
+      get_permissions_id_name().then(data => {
+        this.PermissionsList = data.data
+      })
+    }
   },
   mounted() {
     this.getAllData()
+    this.getAllPermissions()
   }
 
 }

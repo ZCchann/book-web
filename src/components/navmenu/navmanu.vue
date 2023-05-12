@@ -1,11 +1,9 @@
 <template>
   <el-aside width="200px">
     <el-menu default-active="1" class="el-menu-vertical-demo" router>
-
       <template v-for="i in getRouter">
-
         <!--    第一层      -->
-        <el-sub-menu v-if="i.children" :index="i.name">
+        <el-sub-menu v-if="i.children && i.children.length > 0" :index="i.name">
           <template #title>
             <el-icon>
               <Menu/>
@@ -22,8 +20,6 @@
 
           </el-menu-item-group>
         </el-sub-menu>
-
-
         <el-menu-item v-else :index="i.path">
           {{ i.meta.title }}
         </el-menu-item>
@@ -38,19 +34,18 @@
 
 export default {
 
-  methods: {
-
-  },
+  methods: {},
   mounted() {
   },
   computed: {
     // 动态获取路由信息
     getRouter() {
       const m = this.$router.getRoutes().filter(i => {
-        return i.name === "home"
+        return i.meta.isTrue === 1
       });
+      console.log("m = ", m)
       if (m.length > 0) {
-        return m[0].children
+        return m
       } else {
         return []
       }

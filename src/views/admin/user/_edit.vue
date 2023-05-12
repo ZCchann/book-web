@@ -9,7 +9,6 @@
         <el-input v-model="form.username"/>
       </el-form-item>
 
-
       <el-form-item label="邮箱" prop="email" :rules="[
             {
               required: true,

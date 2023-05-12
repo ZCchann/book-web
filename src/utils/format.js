@@ -18,3 +18,9 @@ export const restrictionFormat = (row, column, value) => {
         return "是";
     }
 }
+
+
+export const getRuleNameById = (id, array) => {
+    const result = array.find((item) => item.id === id);
+    return result ? result.rulename : null;
+}

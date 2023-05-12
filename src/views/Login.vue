@@ -18,7 +18,8 @@
 
 <script>
 import {login} from "@/api";
-import { setStorage} from "@/utils/browser";
+import {setStorage} from "@/utils/browser";
+import store from "@/store";
 
 export default {
   name: "LoginView",
@@ -37,10 +38,14 @@ export default {
         if (valid) {
           login(this.loginForm)
               .then(data => {
-                setStorage('user', {"name": this.loginForm.username})
+                setStorage('user', this.loginForm.username)
                 setStorage('uuid', data.uuid)
                 setStorage('jwt', data.jwt)
-                this.$router.push({name: 'home'})
+                store.dispatch("login").then(() => {
+                  console.log("登陆跳转")
+                  // router.push({ path: "/home" })
+                  this.$router.replace("/index")
+                })
               })
               .catch(data => {
                 this.errMsg = data.response.data

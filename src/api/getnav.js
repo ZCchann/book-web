@@ -5,5 +5,5 @@ export const http = axios({
 })
 
 export const getNav = () => {
-    return http.get('user/get_route')
+    return http.get('permissions/get_route')
 }

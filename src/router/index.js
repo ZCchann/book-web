@@ -1,90 +1,43 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '../components/home.vue'
 import LoginView from '../views/Login.vue'
+import {getStorage} from "@/utils/browser";
+import store from "@/store";
+import {getNav} from "@/api/getnav";
 
-const routes = [
+export const routes = [
     {
         path: '/',
         name: 'home',
         component: HomeView,
+        redirect: '/index', //定义一个跳转 访问"/"的时候直接跳转去/index
         children: [
             {
                 path: '/index',
                 name: 'Index',
-                meta: {title: "首页"},
+                meta: {
+                    title: "首页",
+                    isTrue: 1
+                },
                 component: () => import('../views/index/index.vue')
-            },
-            {
-                path: '/admin',
-                name: 'adminMenu',
-                meta: {title: "管理员菜单"},
-                children:[
-                    {
-                        path: '/alldata',
-                        name: 'AllData',
-                        meta: {
-                            title: "数据管理"
-                        },
-                        component: () => import('@/views/admin/getbook/GetbookView.vue')
-                    },
-                    {
-                        path: '/user',
-                        name: 'User',
-                        meta: {
-                            title: "用户管理"
-                        },
-                        component: () => import('@/views/admin/user/UserView.vue')
-                    },
-                ]
-            },
-            {
-                path: '/order',
-                name: 'orderMenu',
-                meta: {title: "订单管理"},
-                children: [
-                    {
-                        path: '/neworder',
-                        name: 'NewOrderView',
-                        meta: {
-                            title: "新增订单"
-                        },
-                        component: () => import('@/views/order/newOrder/newOrderView.vue')
-                    },
-                    {
-                        path: '/orderlist',
-                        name: 'OrderListView',
-                        meta: {
-                            title: "已下单"
-                        },
-                        component: () => import('@/views/order/OrderView.vue')
-                    },
-
-                ]
             },
             {
                 path: '/personal',
                 name: 'PersonalView',
                 meta: {
                     title: "个人信息",
+                    isTrue: 1
                 },
                 component: () => import('@/views/personal/PersonalView.vue')
             },
-
         ]
     },
     {
         path: '/login',
         name: 'login',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: LoginView
     },
-    {
-        path: '/:pathMatch(.*)*',
-        name: 'NotFound',
-        component: () => import('../components/404.vue')
-    }
+
 
 ]
 
@@ -93,32 +46,79 @@ const router = createRouter({
     routes
 })
 
-// router.beforeEach(async (to, from, next) => {
-//     if (store && store.state.nav.length === 0) {
-//         let res = await getNav();
-//         let routerData = addr(res.data);
-//         router.addRoute(routerData);
-//
-//         await store.dispatch('SETNAV', res.data)
-//         next({...to})
-//     } else {
-//         next()
-//     }
-//
-// })
-//
-// function addr(navData) {
-//     navData.forEach(v => {
-//         routes[0].children.push({
-//             path: v.path,
-//             name: v.name,
-//             meta: {title: v.title},
-//             component: () => import('@/views/' + v.component)
-//         })
-//     })
-//
-//
-//     return router;
-// }
+// 处理动态引入组件函数
+
+const getComponent = (data) => {
+    data.map(item => {
+        if (item.children) {
+            item.children.forEach((i) => {
+                let imp = i.component
+                i.component = () => import (`@/views/${imp}`)
+            })
+        } else {
+            let imp = item.component
+            item.component.component = () => import (`@/views/${imp}`)
+        }
+    })
+    return data
+}
+
+const RouterAdd = (data) => {
+    let routers = JSON.parse(JSON.stringify(data))
+    let routerList = getComponent(routers)
+    // 先添加主路由 再添加404页面 避免刷新页面后404错误
+    routerList.forEach((i) => {
+        router.addRoute('home', i)
+    })
+    router.addRoute({
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('../components/404.vue')
+    })
+}
+
+router.beforeEach( async (to, from, next) => {
+    console.log("router: ", router.getRoutes())
+    console.log("to path: ", to.path)
+
+    let user = getStorage("user") //测试  获取user是否存在
+    if (!user) {
+        // 若user不存在 强制跳转login页面
+        if (to.path === "/login") {
+            next()
+        } else {
+            next("/login")
+        }
+    } else {
+        let r = router.getRoutes() //判断一下当前有几条路由
+        let storeRouter = store.state.userInfo.routerList // 取出vuex中存储的路由
+        if (storeRouter.length > 0) {
+            console.log("vuex: ",storeRouter.length)
+            if (r.length > 4) {
+                console.log("router >4 ,vuex有数据")
+                //判断一下 如果vuex中有数据,并且路由已经加载过了 直接跳过
+                next()
+            } else {
+                console.log("router =4,vuex有数据 添加路由")
+                //说明是从登陆页面来的 加载一下路由
+                RouterAdd(storeRouter)
+                next({...to, replace: true})
+            }
+        } else {
+            console.log("vuex: ",storeRouter.length)
+            // 已经登录过 但是刷新了页面
+            console.log("vuex 没数据")
+            await getNav().then(data => {
+                store.commit("set_routerList", data.data)
+                console.log("数据写入后 ",store.state.userInfo.routerList)
+
+                RouterAdd(data.data)
+                console.log("添加路由后 ",router.getRoutes())
+            })
+            next({...to, replace: true})
+        }
+
+    }
+})
 
 export default router
