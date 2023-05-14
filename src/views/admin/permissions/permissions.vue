@@ -71,16 +71,24 @@
       <el-drawer
           v-model="drawer"
           :direction="direction"
+          :before-close="handleClose"
+          close-on-click-modal
+          close-on-press-escape
       >
-        <el-table :data="editData">
-          <el-table-column type="selection" width="55"/>
-          <el-table-column prop="data" label="数据管理" width="140"/>
-          <el-table-column prop="order" label="订单管理" width="140"/>
-          <el-table-column prop="permission" label="权限管理" width="140"/>
-          <el-table-column prop="user" label="用户管理" width="140"/>
-
-        </el-table>
-
+        <el-button
+            type="primary"
+            @click="save"
+        >
+          保存
+        </el-button>
+        <el-tree
+            :data="editData.permissions"
+            :props="props"
+            node-key="name"
+            :default-checked-keys="default_checked_keys"
+            show-checkbox
+            @check-change="handleCheckChange"
+        />
       </el-drawer>
     </div>
 
@@ -88,36 +96,77 @@
 </template>
 
 <script>
-import { get_permissions_by_id, get_permissions_id_name} from "@/api";
+import {get_permissions_by_id, get_permissions_id_name} from "@/api";
+import {Delete, Plus, Search} from "@element-plus/icons-vue";
 
 
 export default {
   name: "permissions",
+  computed: {
+    Search() {
+      return Search
+    },
+    Plus() {
+      return Plus
+    },
+    Delete() {
+      return Delete
+    }
+  },
   data() {
     return {
       tableData: [],
-      editData:[],
+      editData: null,
+      default_checked_keys: [],
       dataId: undefined,
       drawer: false,
       direction: "rtl",
-
+      props: {
+        label: 'name',
+      }
     }
   },
   methods: {
     getAllData() {
       get_permissions_id_name().then(data => {
-        console.log(data.data)
         this.tableData = data.data
       })
     },
     tableHandleEdit(row) {
       this.dataId = row.id
-
       get_permissions_by_id(this.dataId).then(data => {
         this.drawer = true
-        this.editData = [data.data]
-      })
+        this.editData = data.data
 
+        // 把为true的ID丢到列表中 页面会自动渲染为已勾选
+        this.editData.permissions.forEach((i) => {
+          if (i.state) {
+            this.default_checked_keys.push(i.name)
+          }
+        })
+      })
+    },
+    handleClose() {
+      //关闭抽屉事件
+      this.default_checked_keys = []
+      this.drawer = false
+    },
+    tableHandleSelectionChange(val) {
+      //多选框触发事件
+      this.SelectionList = val;
+    },
+    handleCheckChange(data, checked) {
+      //选择器事件
+      this.editData.permissions.forEach((i) => {
+        if (i.name === data.name) {
+          i.state = checked
+        }
+      })
+    },
+    save() {
+      console.log(this.editData)
+
+      this.handleClose()
     }
   },
   mounted() {
