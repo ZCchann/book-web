@@ -165,3 +165,7 @@ export const get_permissions_by_id = (permissions_id) => {
         }
     })
 }
+
+export const update_permissions_by_id = (data) => {
+    return http.post('/permissions/update_permissions_by_id',data)
+}

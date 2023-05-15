@@ -77,7 +77,7 @@
       >
         <el-button
             type="primary"
-            @click="save"
+            @click="treeSave"
         >
           保存
         </el-button>
@@ -96,8 +96,9 @@
 </template>
 
 <script>
-import {get_permissions_by_id, get_permissions_id_name} from "@/api";
+import {get_permissions_by_id, get_permissions_id_name, update_permissions_by_id} from "@/api";
 import {Delete, Plus, Search} from "@element-plus/icons-vue";
+import {ElMessage} from "element-plus";
 
 
 export default {
@@ -137,7 +138,6 @@ export default {
       get_permissions_by_id(this.dataId).then(data => {
         this.drawer = true
         this.editData = data.data
-
         // 把为true的ID丢到列表中 页面会自动渲染为已勾选
         this.editData.permissions.forEach((i) => {
           if (i.state) {
@@ -156,17 +156,30 @@ export default {
       this.SelectionList = val;
     },
     handleCheckChange(data, checked) {
-      //选择器事件
+      //选择器 选中事件
       this.editData.permissions.forEach((i) => {
         if (i.name === data.name) {
           i.state = checked
         }
       })
     },
-    save() {
-      console.log(this.editData)
+    treeSave() {
+      update_permissions_by_id(this.editData).then(() => {
+            ElMessage({
+              type: 'success',
+              message: '保存完成',
+            });
+            this.handleClose()
+          }
+      ).catch(data => {
+        let errorMessage = data.data
+            ElMessage({
+              type: 'success',
+              message: `保存失败, ${errorMessage}`,
+            })
+          }
+      )
 
-      this.handleClose()
     }
   },
   mounted() {
