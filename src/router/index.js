@@ -101,7 +101,8 @@ router.beforeEach( async (to, from, next) => {
             }
         } else {
             // 已经登录过 但是刷新了页面
-            await getNav().then(data => {
+            let uuid = getStorage("uuid")
+            await getNav(uuid).then(data => {
                 store.commit("set_routerList", data.data)
                 RouterAdd(data.data)
             })

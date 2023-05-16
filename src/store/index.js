@@ -1,6 +1,7 @@
 import {createStore} from 'vuex'
 import router from "@/router";
 import {getNav} from "@/api/getnav";
+import {getStorage} from "@/utils/browser";
 
 
 export default createStore({
@@ -34,8 +35,9 @@ export default createStore({
         login({commit}) {
             return new Promise((resolve) => {
                 // 存储路由表到vuex
-                getNav().then(data => {
-                    console.log(data.data)
+                let uuid = getStorage("uuid")
+                getNav(uuid).then(data => {
+                    console.log("data ",data)
                     commit("set_routerList", data.data)
                     resolve()
                 })

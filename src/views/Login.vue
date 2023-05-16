@@ -43,7 +43,6 @@ export default {
                 setStorage('jwt', data.jwt)
                 store.dispatch("login").then(() => {
                   console.log("登陆跳转")
-                  // router.push({ path: "/home" })
                   this.$router.replace("/index")
                 })
               })
