@@ -126,7 +126,7 @@ export default {
       this.PermissionsList.forEach((i) => {
         this.options.push({
           value:i.id,
-          label:i.rulename
+          label:i.rule_name
         })
       })
     }

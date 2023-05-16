@@ -161,11 +161,13 @@ export default {
             })
           })
     },
+    //表格头新建按钮
     tableHandleAdd() {
       this.formVisible = !this.formVisible;
       this.buttonType = "Add";
       this.dataId = undefined;
     },
+    // 批量删除
     tableHandleDelete() {
       let data = this.SelectionList;
       ElMessageBox.confirm(
@@ -209,7 +211,6 @@ export default {
     getAllPermissions() {
       get_permissions_id_name().then(data => {
         this.PermissionsList = data.data
-        console.log(data.data)
       })
     }
   },

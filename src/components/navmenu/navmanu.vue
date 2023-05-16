@@ -43,7 +43,6 @@ export default {
       const m = this.$router.getRoutes().filter(i => {
         return i.meta.isTrue === 1
       });
-      console.log("m = ", m)
       if (m.length > 0) {
         return m
       } else {

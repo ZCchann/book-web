@@ -56,7 +56,7 @@
       >
         <el-table-column type="selection" width="55"/>
         <el-table-column prop="id" label="权限组ID"/>
-        <el-table-column prop="rulename" label="权限组名称"/>
+        <el-table-column prop="rule_name" label="权限组名称"/>
         <el-table-column label="操作">
           <template #default="scope">
             <el-button size="small" @click="tableHandleEdit(scope.row)">Edit</el-button>
@@ -130,8 +130,11 @@ export default {
   methods: {
     getAllData() {
       get_permissions_id_name().then(data => {
+        console.log("data.data",data.data)
         this.tableData = data.data
+        console.log("all data ",this.tableData)
       })
+      console.log("all data2 ",this.tableData)
     },
     tableHandleEdit(row) {
       this.dataId = row.id
