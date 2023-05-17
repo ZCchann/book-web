@@ -60,27 +60,23 @@
         <el-table-column label="操作">
           <template #default="scope">
             <el-button size="small" @click="tableHandleEdit(scope.row)">Edit</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
+            <el-button size="small" type="danger" @click="tableDeleteButton(scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
 
     </div>
 
-    <div class="drawer">
+    <div class="edit-drawer">
       <el-drawer
-          v-model="drawer"
+          v-model="edit_drawer"
           :direction="direction"
-          :before-close="handleClose"
+          :before-close="editClose"
           close-on-click-modal
           close-on-press-escape
       >
-        <el-button
-            type="primary"
-            @click="treeSave"
-        >
-          保存
-        </el-button>
+        <el-input v-model="editData.rule_name" placeholder="请输入权限名称" clearable/>
+
         <el-tree
             :data="editData.permissions"
             :props="props"
@@ -89,14 +85,53 @@
             show-checkbox
             @check-change="handleCheckChange"
         />
+
+        <el-button
+            type="primary"
+            @click="editSaveButton"
+        >
+          保存
+        </el-button>
       </el-drawer>
     </div>
 
+    <div class="add-drawer">
+      <el-drawer
+          v-model="add_drawer"
+          :direction="direction"
+          :before-close="addClose"
+          close-on-click-modal
+          close-on-press-escape
+      >
+        <el-input v-model="editData.rule_name" placeholder="请输入权限名称" clearable/>
+
+        <el-tree
+            :data="editData.permissions"
+            :props="props"
+            node-key="name"
+            :default-checked-keys="default_checked_keys"
+            show-checkbox
+            @check-change="handleCheckChange"
+        />
+        <el-button
+            type="primary"
+            @click="addSaveButton"
+        >
+          保存
+        </el-button>
+      </el-drawer>
+    </div>
   </div>
 </template>
 
 <script>
-import {get_permissions_by_id, get_permissions_id_name, update_permissions_by_id} from "@/api";
+import {
+  add_permissions_by_id,
+  get_permissions_by_id,
+  get_permissions_demo,
+  get_permissions_id_name,
+  update_permissions_by_id
+} from "@/api";
 import {Delete, Plus, Search} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
 
@@ -120,26 +155,27 @@ export default {
       editData: null,
       default_checked_keys: [],
       dataId: undefined,
-      drawer: false,
+      edit_drawer: false, // 编辑菜单的抽屉状态
+      add_drawer: false, // 添加菜单的抽屉状态
       direction: "rtl",
+      input_text: "", //添加页面的输入框文本
       props: {
         label: 'name',
-      }
+      },
+      SelectionList:[]
     }
   },
   methods: {
     getAllData() {
       get_permissions_id_name().then(data => {
-        console.log("data.data",data.data)
+        console.log(data)
         this.tableData = data.data
-        console.log("all data ",this.tableData)
       })
-      console.log("all data2 ",this.tableData)
     },
     tableHandleEdit(row) {
       this.dataId = row.id
       get_permissions_by_id(this.dataId).then(data => {
-        this.drawer = true
+        this.edit_drawer = !this.edit_drawer
         this.editData = data.data
         // 把为true的ID丢到列表中 页面会自动渲染为已勾选
         this.editData.permissions.forEach((i) => {
@@ -149,10 +185,17 @@ export default {
         })
       })
     },
-    handleClose() {
+    editClose() {
       //关闭抽屉事件
       this.default_checked_keys = []
-      this.drawer = false
+      this.input_text = ""
+      this.edit_drawer = false
+    },
+    addClose() {
+      //关闭抽屉事件
+      this.default_checked_keys = []
+      this.input_text = ""
+      this.add_drawer = false
     },
     tableHandleSelectionChange(val) {
       //多选框触发事件
@@ -166,23 +209,60 @@ export default {
         }
       })
     },
-    treeSave() {
+    editSaveButton() {
+      //编辑菜单保存按钮
       update_permissions_by_id(this.editData).then(() => {
             ElMessage({
               type: 'success',
               message: '保存完成',
             });
-            this.handleClose()
+            this.editClose()
           }
       ).catch(data => {
-        let errorMessage = data.data
+            let errorMessage = data.data
             ElMessage({
               type: 'success',
               message: `保存失败, ${errorMessage}`,
             })
+            this.editClose()
           }
       )
+    },
+    addSaveButton() {
+      // 新增菜单保存按钮
+      add_permissions_by_id(this.editData).then(() => {
+            ElMessage({
+              type: 'success',
+              message: '添加完成',
+            });
+            this.addClose()
+          }
+      ).catch(data => {
+            let errorMessage = data.data
+            ElMessage({
+              type: 'success',
+              message: `添加失败, ${errorMessage}`,
+            })
+            this.addClose()
+          }
+      )
+    },
 
+    tableHandleAdd() {
+      // 搜索框旁添加按钮
+      get_permissions_demo().then(data => {
+        console.log(data)
+        this.editData = data.data
+        this.add_drawer = true
+      })
+    },
+    tableDeleteButton(row) {
+      //表格内删除按钮
+      console.log("row ",row)
+    },
+    tableHandleDelete() {
+      // 搜索框删除按钮
+      console.log(this.SelectionList)
     }
   },
   mounted() {

@@ -37,7 +37,6 @@ export default createStore({
                 // 存储路由表到vuex
                 let uuid = getStorage("uuid")
                 getNav(uuid).then(data => {
-                    console.log("data ",data)
                     commit("set_routerList", data.data)
                     resolve()
                 })
@@ -50,10 +49,12 @@ export default createStore({
                 const delRouterList = JSON.parse(
                     JSON.stringify(state.userInfo.routerList)
                 )
-                //删除添加的路由，如果路由是多层的 递归下。。
+                // //删除添加的路由，如果路由是多层的 递归下。。
                 delRouterList.forEach((route) => {
                     router.removeRoute(route.name)
                 })
+
+                router.removeRoute("NotFound") //因为404是动态添加的 这里需要多删一个404
                 //删除路由
                 commit("set_routerList", {
                     routerList: []
