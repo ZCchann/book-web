@@ -170,7 +170,6 @@ export default {
       )
     },
     handleChange(val) {
-      console.log(val)
       let loc = "";
       for (let i = 0; i < this.selectedOptions.length; i++) {
         loc += CodeToText[this.selectedOptions[i]];

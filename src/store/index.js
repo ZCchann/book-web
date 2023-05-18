@@ -55,6 +55,7 @@ export default createStore({
                 })
 
                 router.removeRoute("NotFound") //因为404是动态添加的 这里需要多删一个404
+                router.removeRoute("about") // about也是动态加的 这里也要删掉一下
                 //删除路由
                 commit("set_routerList", {
                     routerList: []

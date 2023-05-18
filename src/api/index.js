@@ -103,6 +103,12 @@ export const getOrder = () => {
         }
     })
 }
+
+// 获取所有订单
+export const getAllOrder = () => {
+    return http.get('/order/get_all_order')
+}
+
 export const getOrderDetails = (orderNumber) => {
     return http.get('/order/get_order_details', {
         params: {
@@ -174,9 +180,17 @@ export const get_permissions_demo = () => {
 
 // add_permission 添加一个新的权限信息
 export const add_permissions_by_id = (data) => {
-    return http.post('/permissions/add_permission',data)
+    return http.post('/permissions/add_permission', data)
 }
 
 export const update_permissions_by_id = (data) => {
-    return http.post('/permissions/update_permissions_by_id',data)
+    return http.post('/permissions/update_permissions_by_id', data)
+}
+
+// del_permissions_by_id 删除权限 通过权限组ID信息
+export const del_permissions_by_id = (data) => {
+    return http.delete('/permissions/del_permissions_by_id',
+        {
+            data: data
+        })
 }

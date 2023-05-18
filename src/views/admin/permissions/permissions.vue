@@ -3,27 +3,28 @@
 
     <div class="table-header">
       <el-row>
-        <el-col :span="5">
-          <!--   搜索框     -->
-          <el-input
-              type="text"
-              v-model="searchInput"
-              class="w-50 m-2"
-              size="large"
-              placeholder="Please Input"
-              :prefix-icon="Search"
-              @keyup.enter="search"
-          >
-            <!--  搜索按钮-->
-            <template #append>
-              <el-button
-                  :icon="Search"
-                  @click="search"
-              />
-            </template>
+<!--    偷懒了暂时不想做搜索框了 有需求了下次再写= =    -->
+<!--        <el-col :span="5">-->
+<!--          &lt;!&ndash;   搜索框     &ndash;&gt;-->
+<!--          <el-input-->
+<!--              type="text"-->
+<!--              v-model="searchInput"-->
+<!--              class="w-50 m-2"-->
+<!--              size="large"-->
+<!--              placeholder="Please Input"-->
+<!--              :prefix-icon="Search"-->
+<!--              @keyup.enter="search"-->
+<!--          >-->
+<!--            &lt;!&ndash;  搜索按钮&ndash;&gt;-->
+<!--            <template #append>-->
+<!--              <el-button-->
+<!--                  :icon="Search"-->
+<!--                  @click="search"-->
+<!--              />-->
+<!--            </template>-->
 
-          </el-input>
-        </el-col>
+<!--          </el-input>-->
+<!--        </el-col>-->
 
         <!--   搜索框旁按钮   -->
         <el-col :span="4">
@@ -126,14 +127,14 @@
 
 <script>
 import {
-  add_permissions_by_id,
+  add_permissions_by_id, del_permissions_by_id,
   get_permissions_by_id,
   get_permissions_demo,
-  get_permissions_id_name,
+  get_permissions_id_name, searchUserData,
   update_permissions_by_id
 } from "@/api";
 import {Delete, Plus, Search} from "@element-plus/icons-vue";
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 
 export default {
@@ -162,13 +163,13 @@ export default {
       props: {
         label: 'name',
       },
-      SelectionList:[]
+      SelectionList: [],
+      searchInput:""
     }
   },
   methods: {
     getAllData() {
       get_permissions_id_name().then(data => {
-        console.log(data)
         this.tableData = data.data
       })
     },
@@ -236,6 +237,7 @@ export default {
               message: '添加完成',
             });
             this.addClose()
+            this.getAllData()
           }
       ).catch(data => {
             let errorMessage = data.data
@@ -251,19 +253,65 @@ export default {
     tableHandleAdd() {
       // 搜索框旁添加按钮
       get_permissions_demo().then(data => {
-        console.log(data)
         this.editData = data.data
         this.add_drawer = true
       })
     },
     tableDeleteButton(row) {
-      //表格内删除按钮
-      console.log("row ",row)
+      ElMessageBox.confirm(
+          '确定要删除这条数据?',
+          'Warning',
+          {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+          }
+      ).then(() => {
+        //表格内删除按钮
+        let resData = [row] //给单个数据套个数组 匹配API接口数据格式
+        del_permissions_by_id(resData).then(() => {
+          ElMessage({
+            type: 'success',
+            message: '删除完成',
+          })
+          this.getAllData()
+        }).catch(data => {
+          ElMessage({
+            type: 'error',
+            message: `删除失败, ${data.message}`,
+          })
+          this.getAllData()
+        })
+      })
+
     },
     tableHandleDelete() {
       // 搜索框删除按钮
-      console.log(this.SelectionList)
-    }
+      ElMessageBox.confirm(
+          '确定要删除这些数据?',
+          'Warning',
+          {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+          }
+      ).then(() => {
+        del_permissions_by_id(this.SelectionList).then(() => {
+          ElMessage({
+            type: 'success',
+            message: '删除完成',
+          })
+          this.getAllData()
+        }).catch(data => {
+          ElMessage({
+            type: 'error',
+            message: `删除失败, ${data.message}`,
+          })
+          this.getAllData()
+        })
+      })
+
+    },
   },
   mounted() {
     this.getAllData()

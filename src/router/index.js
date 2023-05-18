@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '../components/home.vue'
 import LoginView from '../views/Login.vue'
+import AboutView from "@/views/about/AboutView.vue";
 import {getStorage} from "@/utils/browser";
 import store from "@/store";
 import {getNav} from "@/api/getnav";
@@ -29,7 +30,7 @@ export const routes = [
                     isTrue: 1
                 },
                 component: () => import('@/views/personal/PersonalView.vue')
-            },
+            }
         ]
     },
     {
@@ -37,8 +38,6 @@ export const routes = [
         name: 'login',
         component: LoginView
     },
-
-
 ]
 
 const router = createRouter({
@@ -75,10 +74,19 @@ const RouterAdd = (data) => {
         name: 'NotFound',
         component: () => import('../components/404.vue')
     })
+    // menu的排序问题 目前看来是由路由的添加循序决定的 about先放这里 后续要想下怎么改
+    router.addRoute("home",{
+        path: '/about',
+        name: 'about',
+        meta: {
+            title: "关于本系统",
+            isTrue: 1
+        },
+        component: AboutView
+    })
 }
 
-router.beforeEach( async (to, from, next) => {
-
+router.beforeEach(async (to, from, next) => {
     let user = getStorage("user") //测试  获取user是否存在
     if (!user) {
         // 若user不存在 强制跳转login页面

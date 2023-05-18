@@ -24,7 +24,7 @@ export default ({baseURL}) => {
             return config
         },
         (err) => {
-            console.log('请求拦截err:', err)
+            // console.log('请求拦截err:', err)
             return Promise.error(err)
         }
     )
