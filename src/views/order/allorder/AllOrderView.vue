@@ -28,11 +28,11 @@
 
 <script>
 import {formatterDate} from "@/utils/format";
-import {getOrder} from "@/api";
+import {getAllOrder, getOrder} from "@/api";
 import OrderList from "@/views/order/orderList/orderList.vue";
 
 export default {
-  name: "OrderListView",
+  name: "AllOrder",
   components: {OrderList},
   data() {
     return {
@@ -49,7 +49,7 @@ export default {
   methods: {
     formatterDate,
     getAllOrder() {
-      getOrder().then(({data}) => {
+      getAllOrder().then(({data}) => {
             this.orderData = data
           }
       )
@@ -60,8 +60,6 @@ export default {
       this.Information.name = row.addressee;
       this.Information.telephone = row.telephone;
       this.Information.address = row.address;
-
-
     }
 
   },

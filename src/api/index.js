@@ -103,6 +103,12 @@ export const getOrder = () => {
         }
     })
 }
+
+// 获取所有订单
+export const getAllOrder = () => {
+    return http.get('/order/get_all_order')
+}
+
 export const getOrderDetails = (orderNumber) => {
     return http.get('/order/get_order_details', {
         params: {
@@ -154,14 +160,37 @@ export const deleteUserAddress = (address_id) => {
 }
 
 //权限管理
+// get_permissions_id_name 返回所有的权限组名称、ID号
 export const get_permissions_id_name = () => {
     return http.get('/permissions/get_permissions_id_name')
 }
 
+// get_permissions_by_id 传入权限组ID,返回权限详情
 export const get_permissions_by_id = (permissions_id) => {
     return http.get('/permissions/get_permissions_by_id', {
         params: {
             permissions_id: permissions_id
         }
     })
+}
+// get_permissions_demo 返回一个空的权限组信息
+export const get_permissions_demo = () => {
+    return http.get('/permissions/get_permissions_demo')
+}
+
+// add_permission 添加一个新的权限信息
+export const add_permissions_by_id = (data) => {
+    return http.post('/permissions/add_permission', data)
+}
+
+export const update_permissions_by_id = (data) => {
+    return http.post('/permissions/update_permissions_by_id', data)
+}
+
+// del_permissions_by_id 删除权限 通过权限组ID信息
+export const del_permissions_by_id = (data) => {
+    return http.delete('/permissions/del_permissions_by_id',
+        {
+            data: data
+        })
 }

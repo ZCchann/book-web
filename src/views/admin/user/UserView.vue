@@ -75,6 +75,7 @@
       :dataID="dataId"
       :on-Success="getAllData"
       :button-Type="buttonType"
+      :PermissionsList="PermissionsList"
       @update:visible="formVisible = $event"
   />
 </template>
@@ -160,11 +161,13 @@ export default {
             })
           })
     },
+    //表格头新建按钮
     tableHandleAdd() {
       this.formVisible = !this.formVisible;
       this.buttonType = "Add";
       this.dataId = undefined;
     },
+    // 批量删除
     tableHandleDelete() {
       let data = this.SelectionList;
       ElMessageBox.confirm(

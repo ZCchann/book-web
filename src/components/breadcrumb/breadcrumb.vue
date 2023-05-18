@@ -53,7 +53,7 @@ export default defineComponent({
     logOut() {
       logout().then(() => {
         localStorage.clear()
-        store.dispatch("delRoute")
+        store.dispatch("logout")
         this.$router.replace("/login")
       })
 

@@ -22,5 +22,5 @@ export const restrictionFormat = (row, column, value) => {
 
 export const getRuleNameById = (id, array) => {
     const result = array.find((item) => item.id === id);
-    return result ? result.rulename : null;
+    return result ? result.rule_name : null;
 }

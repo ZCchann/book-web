@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '../components/home.vue'
 import LoginView from '../views/Login.vue'
+import AboutView from "@/views/about/AboutView.vue";
 import {getStorage} from "@/utils/browser";
 import store from "@/store";
 import {getNav} from "@/api/getnav";
@@ -29,7 +30,7 @@ export const routes = [
                     isTrue: 1
                 },
                 component: () => import('@/views/personal/PersonalView.vue')
-            },
+            }
         ]
     },
     {
@@ -37,8 +38,6 @@ export const routes = [
         name: 'login',
         component: LoginView
     },
-
-
 ]
 
 const router = createRouter({
@@ -75,12 +74,19 @@ const RouterAdd = (data) => {
         name: 'NotFound',
         component: () => import('../components/404.vue')
     })
+    // menu的排序问题 目前看来是由路由的添加循序决定的 about先放这里 后续要想下怎么改
+    router.addRoute("home",{
+        path: '/about',
+        name: 'about',
+        meta: {
+            title: "关于本系统",
+            isTrue: 1
+        },
+        component: AboutView
+    })
 }
 
-router.beforeEach( async (to, from, next) => {
-    console.log("router: ", router.getRoutes())
-    console.log("to path: ", to.path)
-
+router.beforeEach(async (to, from, next) => {
     let user = getStorage("user") //测试  获取user是否存在
     if (!user) {
         // 若user不存在 强制跳转login页面
@@ -93,27 +99,20 @@ router.beforeEach( async (to, from, next) => {
         let r = router.getRoutes() //判断一下当前有几条路由
         let storeRouter = store.state.userInfo.routerList // 取出vuex中存储的路由
         if (storeRouter.length > 0) {
-            console.log("vuex: ",storeRouter.length)
             if (r.length > 4) {
-                console.log("router >4 ,vuex有数据")
                 //判断一下 如果vuex中有数据,并且路由已经加载过了 直接跳过
                 next()
             } else {
-                console.log("router =4,vuex有数据 添加路由")
                 //说明是从登陆页面来的 加载一下路由
                 RouterAdd(storeRouter)
                 next({...to, replace: true})
             }
         } else {
-            console.log("vuex: ",storeRouter.length)
             // 已经登录过 但是刷新了页面
-            console.log("vuex 没数据")
-            await getNav().then(data => {
+            let uuid = getStorage("uuid")
+            await getNav(uuid).then(data => {
                 store.commit("set_routerList", data.data)
-                console.log("数据写入后 ",store.state.userInfo.routerList)
-
                 RouterAdd(data.data)
-                console.log("添加路由后 ",router.getRoutes())
             })
             next({...to, replace: true})
         }

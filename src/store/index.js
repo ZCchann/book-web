@@ -1,6 +1,7 @@
 import {createStore} from 'vuex'
 import router from "@/router";
 import {getNav} from "@/api/getnav";
+import {getStorage} from "@/utils/browser";
 
 
 export default createStore({
@@ -34,8 +35,8 @@ export default createStore({
         login({commit}) {
             return new Promise((resolve) => {
                 // 存储路由表到vuex
-                getNav().then(data => {
-                    console.log(data.data)
+                let uuid = getStorage("uuid")
+                getNav(uuid).then(data => {
                     commit("set_routerList", data.data)
                     resolve()
                 })
@@ -48,10 +49,13 @@ export default createStore({
                 const delRouterList = JSON.parse(
                     JSON.stringify(state.userInfo.routerList)
                 )
-                //删除添加的路由，如果路由是多层的 递归下。。
+                // //删除添加的路由，如果路由是多层的 递归下。。
                 delRouterList.forEach((route) => {
                     router.removeRoute(route.name)
                 })
+
+                router.removeRoute("NotFound") //因为404是动态添加的 这里需要多删一个404
+                router.removeRoute("about") // about也是动态加的 这里也要删掉一下
                 //删除路由
                 commit("set_routerList", {
                     routerList: []
