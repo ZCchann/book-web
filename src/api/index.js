@@ -96,17 +96,26 @@ export const createOrder = (data) => {
     return http.post('/order/create', data, headers)
 }
 
-export const getOrder = () => {
+export const getOrder = (page, pagesize) => {
     return http.get('/order/get_order', {
         headers: {
             uuid: getStorage("uuid")
+        },
+        params: {
+            page: page,
+            pagesize: pagesize
         }
     })
 }
 
 // 获取所有订单
-export const getAllOrder = () => {
-    return http.get('/order/get_all_order')
+export const getAllOrder = (page, pagesize) => {
+    return http.get('/order/get_all_order', {
+        params: {
+            page: page,
+            pagesize: pagesize
+        }
+    })
 }
 
 export const getOrderDetails = (orderNumber) => {

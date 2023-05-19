@@ -116,7 +116,6 @@ router.beforeEach(async (to, from, next) => {
             })
             next({...to, replace: true})
         }
-
     }
 })
 

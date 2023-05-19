@@ -25,7 +25,6 @@
       <el-table-column prop="total_price" label="总价"/>
     </el-table>
 
-
   </el-dialog>
 </template>
 
@@ -133,11 +132,9 @@ export default {
         getOrderDetails(this.orderNumber).then(({data}) => {
           this.orderDate = data;
         })
-
         this.address.push(this.Information.name)
         this.address.push(this.Information.telephone)
         this.address.push(this.Information.address)
-
       }
     }
   }
