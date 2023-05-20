@@ -25,7 +25,14 @@
     </el-row>
 
 
-    <el-table :data="tableData" @selection-change="tableHandleSelectionChange" border style="width: 100%" height="790">
+    <el-table
+        :data="tableData"
+        @selection-change="tableHandleSelectionChange"
+        border
+        style="width: 100%"
+        height="790"
+        ref="multipleTable"
+    >
       <el-table-column type="selection" width="55"/>
       <el-table-column prop="isbn" label="ISBN" width="140"/>
       <el-table-column prop="tittle" label="书名"/>
@@ -75,12 +82,12 @@ export default {
     return {
       drawer: false,
       searchInput: "",
-      tableData: [],
-      SelectionList: [],
-      orderList: [],
+      tableData: [],  // 表格内的图书数据
+      SelectionList: [],  // 选择器勾选的数据
+      orderList: [],  // 返回去主页面的数据
       currentPage: 1,
       pageSize: 10,
-      total: 0,
+      total: 0
     }
   },
   methods: {
@@ -113,6 +120,8 @@ export default {
     },
 
     dialogClose() {
+      this.SelectionList = []
+      this.$refs.multipleTable.clearSelection()
       this.$emit('update:visible', false);
     },
     search() {
@@ -141,7 +150,6 @@ export default {
         }
       }
       this.$emit("update:orderDate", this.orderList);
-
     }
   },
   mounted() {
@@ -151,7 +159,7 @@ export default {
   watch: {
     visible(val) {
       this.drawer = val;
-
+      console.log(this.SelectionList)
     }
   }
 }

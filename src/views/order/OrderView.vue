@@ -68,8 +68,9 @@ export default {
     },
     formatterDate, // 日期格式化
     getAllOrder() {
-      getOrder(this.page, this.pageSize).then(({data}) => {
-            this.orderData = data
+      getOrder(this.page, this.pageSize).then((data) => {
+            this.orderData = data.data
+            this.total = data.total
           }
       )
     },

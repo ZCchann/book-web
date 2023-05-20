@@ -101,7 +101,7 @@ import {formatterDate, restrictionFormat} from "@/utils/format";
 
 export default {
   name: "NewOrder",
-  components: {AddOrder, Submit,ImportView},
+  components: {AddOrder, Submit, ImportView},
   computed: {
     DocumentAdd() {
       return DocumentAdd
@@ -168,15 +168,12 @@ export default {
             type: 'warning',
           }
       ).then(() => {
-            let temp = []
-            for (let x = 0; x < this.tableData.length; x++) {
-              for (let i = 0; i < data.length; i++) {
-                if (data[i] !== this.tableData[x]) {
-                  temp.push(this.tableData[x])
-                }
+            for (let i = 0; i < data.length; i++) {
+              let index = this.tableData.findIndex(book => book.id === data[i].id);
+              if (index !== -1) {
+                this.tableData.splice(index, 1); // 删除指定元素
               }
             }
-            this.tableData = temp;
           }
       )
     },
@@ -202,15 +199,15 @@ export default {
     tableHandleImport() {
       this.importVisible = !this.importVisible;
     },
-    tableHandleEdit(row) {
-      this.AddVisible = !this.AddVisible;
-      this.buttonType = "Edit";
-      this.dataId = row.id
-    },
+    // tableHandleEdit(row) {
+    //   this.AddVisible = !this.AddVisible;
+    //   this.buttonType = "Edit";
+    //   this.dataId = row.id
+    // },
     tableHandleSubmit() {
       //计算一下每一个书本数量*单价后的结果 加入数组中
       let data = this.tableData;
-      for (let i = 0;i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         data[i].total_price = data[i].price * data[i].amount;
       }
       this.submitVisible = !this.submitVisible;

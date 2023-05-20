@@ -82,8 +82,9 @@ export default {
     formatterDate, // 日期格式化
     getAllOrder() {
       // 获取所有订单
-      getAllOrder(this.page, this.pageSize).then(({data}) => {
-            this.orderData = data
+      getAllOrder(this.page, this.pageSize).then((data) => {
+            this.orderData = data.data
+            this.total = data.total
           }
       )
     },

@@ -54,7 +54,7 @@
           border
           style="width: 100%"
           @selection-change="tableHandleSelectionChange"
-
+          height="790px"
       >
         <el-table-column type="selection" width="55"/>
         <el-table-column prop="username" label="用户名"/>
@@ -68,6 +68,13 @@
         </el-table-column>
       </el-table>
 
+    </div>
+
+    <div class="pagination-block">
+      <el-pagination background v-model:current-page="currentPage" v-model:page-size="pageSize"
+                     :page-sizes="[10, 20, 50, 100]" :background="background"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="total" @size-change="footerSizeChange" @current-change="footerCurrentChange"/>
     </div>
   </div>
   <UserEdit
@@ -104,16 +111,15 @@ export default {
   data() {
     return {
       userDataTable: [],
-      total: 0,
-      page: 1,
-      currentpage: 1,
-      pageSize: 10,
       dataId: undefined,
       formVisible: false,
       buttonType: "",//窗口状态
       searchInput: "", //搜索框文本
       SelectionList: [], //多选框列表
-      PermissionsList: []
+      PermissionsList: [],
+      currentPage: 1,
+      pageSize: 10,
+      total: 0,
     }
   },
   methods: {
@@ -212,7 +218,17 @@ export default {
       get_permissions_id_name().then(data => {
         this.PermissionsList = data.data
       })
-    }
+    },
+    // 更改每页显示数量触发事件
+    footerSizeChange(val) {
+      this.pageSize = val;
+      this.getAllData();
+    },
+    // 点击页码触发事件
+    footerCurrentChange(val) {
+      this.page = val;
+      this.getAllData();
+    },
   },
   mounted() {
     this.getAllData()
