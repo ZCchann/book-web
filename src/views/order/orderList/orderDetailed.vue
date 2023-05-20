@@ -34,7 +34,7 @@ import FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 
 export default {
-  name: "orderList",
+  name: "orderDetailedView",
   props: {
     visible: Boolean,
     formatterDate: Function,

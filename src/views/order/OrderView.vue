@@ -35,7 +35,7 @@
 <script>
 import {formatterDate} from "@/utils/format";
 import {getOrder} from "@/api";
-import OrderList from "@/views/order/orderList/orderList.vue";
+import OrderList from "@/views/order/orderList/orderDetailed.vue";
 
 export default {
   name: "OrderListView",

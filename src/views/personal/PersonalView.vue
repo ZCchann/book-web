@@ -118,6 +118,7 @@ import {ElMessage, ElMessageBox} from "element-plus";
 import {regionData, CodeToText} from "element-china-area-data";
 import {Delete, Edit} from "@element-plus/icons-vue";
 import Personal_edit_View from "@/views/personal/_edit.vue";
+import {hexPassword} from "@/utils/hex";
 
 export default {
   name: "PersonalView",
@@ -135,7 +136,8 @@ export default {
       form: {
         username: "",
         password: "",
-        email: ""
+        email: "",
+        authorityid: 0
       },
       showPassword: false,
       addressForm: {
@@ -160,12 +162,17 @@ export default {
       })
     },
     save() {
+      if (this.form.password === "") {
+        delete this.form["password"];
+      } else {
+        this.form.password = hexPassword(this.form.password)
+      }
       editUser(this.form).then(() => {
             ElMessage({
               type: 'success',
               message: '保存成功',
             })
-            this.handleSuccess();
+            this.getData()
           }
       )
     },

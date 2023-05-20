@@ -125,6 +125,13 @@ export const getOrderDetails = (orderNumber) => {
         }
     })
 }
+export const exportOrderData = (orderNumberList) => {
+    return http.get('/order/export_order_data', {
+        params: {
+            order_number_list: orderNumberList
+        }
+    })
+}
 
 export const AddUserAddress = (data) => {
     const headers = {

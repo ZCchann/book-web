@@ -20,6 +20,7 @@
 import {login} from "@/api";
 import {setStorage} from "@/utils/browser";
 import store from "@/store";
+import {hexPassword} from "@/utils/hex";
 
 export default {
   name: "LoginView",
@@ -36,7 +37,15 @@ export default {
     submit() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          login(this.loginForm)
+          // 拷贝出来一下 然后密码拿去加密
+          // 不拷贝的话 密码输错了 页面的密码栏里字符串会变很长
+          let form = {
+            username: '',
+            password: ''
+          }
+          form.username = this.loginForm.username
+          form.password = hexPassword(this.loginForm.password)
+          login(form)
               .then(data => {
                 setStorage('user', this.loginForm.username)
                 setStorage('uuid', data.uuid)

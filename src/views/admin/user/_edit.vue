@@ -1,7 +1,5 @@
 <template>
   <el-dialog v-model="drawer" :title="buttonType" width="50%" draggable @close="dialogClose">
-
-
     <el-form ref="form" :model="form" :inline="true" label-position="right" label-suffix=":" label-width="120px">
 
       <el-form-item label="用户名" prop="username">
@@ -29,7 +27,7 @@
       </el-form-item>
       <el-button type="primary" @click="generateRandomString">生成随机密码</el-button>
       <el-form-item label="权限">
-        <el-select v-model="form.permissions" class="m-2" placeholder="Select">
+        <el-select v-model="form.authorityid" class="m-2" placeholder="Select">
           <el-option
               v-for="item in options"
               :key="item.value"
@@ -47,6 +45,7 @@
 <script>
 import {getOneUserData, addUser, editUser} from "@/api";
 import {ElMessage} from "element-plus";
+import {hexPassword} from "@/utils/hex";
 
 export default {
   name: "UserEdit",
@@ -58,7 +57,7 @@ export default {
       default: undefined
     },
     onSuccess: Function,
-    PermissionsList:Array
+    PermissionsList: Array
   },
   data() {
     return {
@@ -67,10 +66,10 @@ export default {
         username: "",
         password: "",
         email: "",
-        permissions:0
+        authorityid: ""
       },
       resetPassword: false,
-      options:[]
+      options: []
     }
   },
   methods: {
@@ -94,6 +93,7 @@ export default {
 
     },
     submit() {
+      this.form.password = hexPassword(this.form.password)
       if (this.buttonType === "Add") {
         addUser(this.form).then(() => {
               ElMessage({
@@ -125,8 +125,8 @@ export default {
     toOptions() {
       this.PermissionsList.forEach((i) => {
         this.options.push({
-          value:i.id,
-          label:i.rule_name
+          value: i.id,
+          label: i.rule_name
         })
       })
     }

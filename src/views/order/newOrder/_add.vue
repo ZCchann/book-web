@@ -159,7 +159,6 @@ export default {
   watch: {
     visible(val) {
       this.drawer = val;
-      console.log(this.SelectionList)
     }
   }
 }

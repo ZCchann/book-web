@@ -11,7 +11,7 @@
               v-model="searchInput"
               class="w-50 m-2"
               size="large"
-              placeholder="Please Input"
+              placeholder="请输入用户名"
               :prefix-icon="Search"
               @keyup.enter="search"
           >
@@ -214,6 +214,7 @@ export default {
     tableHandleSelectionChange(val) {
       this.SelectionList = val;
     },
+    //获取权限列表
     getAllPermissions() {
       get_permissions_id_name().then(data => {
         this.PermissionsList = data.data
