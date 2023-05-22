@@ -43,7 +43,13 @@ export const searchUserData = (username, page, pageSize) => {
     })
 }
 
-export const editUser = (data) => {
+export const AdminUpdateUser = (data) => {
+    //管理员修改用户信息
+    return http.post('/user/admin/updateUser', data)
+}
+
+export const updateUser = (data) => {
+    //管理员修改用户信息
     return http.post('/user/updateUser', data)
 }
 

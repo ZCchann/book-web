@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import {getOneUserData, addUser, editUser} from "@/api";
+import {getOneUserData, addUser, AdminUpdateUser} from "@/api";
 import {ElMessage} from "element-plus";
 import {hexPassword} from "@/utils/hex";
 
@@ -104,7 +104,7 @@ export default {
             }
         )
       } else {
-        editUser(this.form).then(() => {
+        AdminUpdateUser(this.form).then(() => {
               ElMessage({
                 type: 'success',
                 message: '更改成功',

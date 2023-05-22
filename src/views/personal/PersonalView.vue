@@ -7,21 +7,9 @@
             <el-input v-model="form.username"/>
           </el-form-item>
         </el-col>
-        <el-form-item label="是否更改密码">
-          <el-switch
-              v-model="showPassword"
-          />
+        <el-form-item label="更改密码 ">
+          <el-button type="primary" size="large" @click="open_reset_mail">更改密码</el-button>
         </el-form-item>
-        <el-col :span="8">
-          <el-form-item v-show="showPassword" label="密码">
-            <el-input
-                type="password"
-                show-password
-                placeholder="请输入密码"
-                v-model="form.password"/>
-          </el-form-item>
-        </el-col>
-
         <el-col :span="8">
           <el-form-item label="邮箱">
             <el-input v-model="form.email"/>
@@ -33,6 +21,48 @@
       </el-form>
     </el-card>
   </div>
+
+  <div class="reset-mail-drawer">
+    <el-drawer v-model="reset_mail_drawer" :direction="direction">
+      <el-form-item label="当前邮箱">
+        <el-input disabled v-model="form.email"/>
+        <el-button type="primary" size="large" @click="getCode">获取验证码</el-button>
+      </el-form-item>
+
+      <el-form-item prop="number" label="请输入验证码" :rules="[
+            {
+              required: true,
+              message: '请输入验证码',
+              trigger: 'blur',
+            },
+            {
+              type: 'number',
+              message: '请输入验证码',
+              trigger: ['blur', 'change'],
+            },
+          ]">
+        <el-input :disabled="reset_mail_input_disabled" v-model="form.code"/>
+      </el-form-item>
+
+      <el-form-item prop="email" label="请输入新邮箱地址" :rules="[
+            {
+              required: true,
+              message: 'Please input email address',
+              trigger: 'blur',
+            },
+            {
+              type: 'email',
+              message: 'Please input correct email address',
+              trigger: ['blur', 'change'],
+            },
+          ]" >
+        <el-input v-model="form.new_email" />
+      </el-form-item>
+
+      <el-button type="primary" size="large" @click="reset_mail_submit">提交</el-button>
+    </el-drawer>
+  </div>
+
 
   <div class="user-address">
     <el-card class="user-address">
@@ -112,13 +142,14 @@
 </template>
 
 <script>
-import {AddUserAddress, deleteUserAddress, editUser, getOneUserData, getUserAllAddress} from "@/api";
+import {AddUserAddress, deleteUserAddress, AdminUpdateUser, getOneUserData, getUserAllAddress, updateUser} from "@/api";
 import {getStorage} from "@/utils/browser";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {regionData, CodeToText} from "element-china-area-data";
 import {Delete, Edit} from "@element-plus/icons-vue";
 import Personal_edit_View from "@/views/personal/_edit.vue";
 import {hexPassword} from "@/utils/hex";
+import {send_verification_code} from "@/api/util";
 
 export default {
   name: "PersonalView",
@@ -137,8 +168,8 @@ export default {
         username: "",
         password: "",
         email: "",
-        authorityid: 0
       },
+      reset_mail_input_disabled: true, // 重置邮箱输入框的禁止输入状态
       showPassword: false,
       addressForm: {
         address_id: undefined,
@@ -150,11 +181,38 @@ export default {
       options: regionData,
       selectedOptions: [],
       formVisible: false,
-      dataId: undefined
-
+      dataId: undefined,
+      reset_mail_drawer: false, //是否开启抽屉
+      direction: "rtl" //抽屉打开方向
     }
   },
   methods: {
+    open_reset_mail() {
+      this.reset_mail_drawer = !this.reset_mail_drawer
+    },
+    getCode() {
+      send_verification_code(this.form.email)
+      ElMessage({
+        message: '验证码已发送 请在邮箱内查收 验证码有效期10分钟',
+        type: 'success',
+      })
+      this.reset_mail_input_disabled = false
+    },
+    reset_mail_submit() {
+      updateUser(this.form).then(() => {
+        ElMessage({
+          type: 'success',
+          message: '保存成功',
+        })
+        this.getData()
+        this.reset_mail_drawer = !this.reset_mail_drawer
+      }).catch((data) => {
+        ElMessage({
+          type: 'error',
+          message: data.message,
+        })
+      })
+    },
     async getData() {
       let uuid = getStorage('uuid');
       getOneUserData(uuid).then(({data}) => {
@@ -167,7 +225,7 @@ export default {
       } else {
         this.form.password = hexPassword(this.form.password)
       }
-      editUser(this.form).then(() => {
+      AdminUpdateUser(this.form).then(() => {
             ElMessage({
               type: 'success',
               message: '保存成功',
@@ -176,7 +234,7 @@ export default {
           }
       )
     },
-    handleChange(val) {
+    handleChange() {
       let loc = "";
       for (let i = 0; i < this.selectedOptions.length; i++) {
         loc += CodeToText[this.selectedOptions[i]];
@@ -205,7 +263,6 @@ export default {
       this.dataId = row.address_id
     },
     handleDelete(row) {
-
       ElMessageBox.confirm(
           '确定要删除这条数据?',
           'Warning',
