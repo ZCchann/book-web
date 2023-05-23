@@ -12,7 +12,7 @@
         height="790"
         show-summary
         :summary-method="getSummaries"
-        id="tableId"
+        id="exporttableId"
     >
       <el-table-column prop="isbn" label="ISBN" width="140"/>
       <el-table-column prop="title" label="书名"/>
@@ -50,6 +50,8 @@ export default {
   },
   methods: {
     dialogClose() {
+      this.orderDate = []
+      this.address = []
       this.$emit('update:visible', false);
       this.$emit('update:orderNumberList', "")
     },
@@ -74,11 +76,11 @@ export default {
       //判断有无fixed定位，如果有的话去掉，后面再加上，不然数据会重复
       if (fix) {
         wb = XLSX.utils.table_to_book(
-            document.querySelector("#tableId").removeChild(fix), xlsxParam
+            document.querySelector("#exporttableId").removeChild(fix), xlsxParam
         );
-        document.querySelector("#tableId").appendChild(fix);
+        document.querySelector("#exporttableId").appendChild(fix);
       } else {
-        wb = XLSX.utils.table_to_book(document.querySelector("#tableId"), xlsxParam);
+        wb = XLSX.utils.table_to_book(document.querySelector("#exporttableId"), xlsxParam);
       }
       let ws = wb.Sheets["Sheet1"];
 
