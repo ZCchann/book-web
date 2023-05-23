@@ -10,9 +10,9 @@
               :limit="1"
           >
             <el-button slot="trigger" size="large" type="primary">上传Excel文件</el-button>
+            <el-button slot="trigger" size="large" type="primary" @click="downloadDemo">下载demo文件</el-button>
           </el-upload>
         </el-col>
-
       </div>
 
       <div class="book-data-table">
@@ -54,6 +54,9 @@ export default {
   },
 
   methods: {
+    downloadDemo() {
+      window.location.href = "/file/demo.xlsx";
+    },
     onUpload(UploadFile) {
       this.tableData = UploadFile.data;
       this.$refs.upload.clearFiles();
