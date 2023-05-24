@@ -5,7 +5,8 @@
         <el-col :span="1">
           <el-upload
               ref="upload"
-              action="http://127.0.0.1:5000/book/fileUpdate"
+              :action="uploadUrl"
+              :headers="headerObj"
               :on-success="onUpload"
               :limit="1"
           >
@@ -24,7 +25,7 @@
           <el-table-column prop="type" label="类型" width="120"/>
           <el-table-column prop="restriction" label="是否为限制级" width="120"/>
           <el-table-column prop="author" label="作者" width="120"/>
-          <el-table-column prop="publication_date" label="出版日"/>
+          <el-table-column prop="publication_date" label="出版日" :formatter="formatterDate"/>
         </el-table>
       </div>
     </div>
@@ -38,6 +39,8 @@
 <script>
 import {addData} from "@/api";
 import {ElMessage} from "element-plus";
+import {getStorage} from "@/utils/browser";
+import {formatterDate} from "@/utils/format";
 
 export default {
   name: "importForm",
@@ -50,17 +53,21 @@ export default {
     return {
       drawer: false,
       tableData: [],
+      headerObj: {
+        Authorization: getStorage('jwt')
+      },
+      uploadUrl: process.env.VUE_APP_BASE_API + "/book/fileUpdate"
     }
   },
 
   methods: {
+    formatterDate, // 日期格式化
     downloadDemo() {
       window.location.href = "/file/demo.xlsx";
     },
     onUpload(UploadFile) {
       this.tableData = UploadFile.data;
       this.$refs.upload.clearFiles();
-
     },
     // 多选框触发事件
     tableHandleSelectionChange(val) {
@@ -80,6 +87,7 @@ export default {
       this.$emit('update:visible', false);
 
     },
+    // 关闭窗口
     dialogClose() {
       this.tableData.splice(0, this.tableData.length);
       this.onSuccess();

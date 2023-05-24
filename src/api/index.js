@@ -2,7 +2,7 @@ import axios from "@/utils/axios"
 import {getStorage} from "@/utils/browser";
 
 export const http = axios({
-    baseURL: "http://127.0.0.1:5000"
+    baseURL: process.env.VUE_APP_BASE_API
 })
 
 //用户数据
@@ -91,9 +91,9 @@ export const searchData = (title, page, pageSize, start_time, end_time) => {
     })
 }
 
-export const uploadData = (data) => {
-    return http.post('/book/fileUpdate', data)
-}
+// export const uploadData = (data) => {
+//     return http.post('/book/fileUpdate', data)
+// }
 
 export const createOrder = (data) => {
     const headers = {
