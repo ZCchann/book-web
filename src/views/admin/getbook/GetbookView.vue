@@ -40,7 +40,7 @@
     <el-table :data="tableData" @selection-change="tableHandleSelectionChange" border style="width: 100%" height="790">
       <el-table-column type="selection" width="55"/>
       <el-table-column prop="isbn" label="ISBN" width="140"/>
-      <el-table-column prop="tittle" label="书名"/>
+      <el-table-column prop="title" label="书名"/>
       <el-table-column prop="price" label="标价" width="80"/>
       <el-table-column prop="press" label="出版社" width="120" sortable/>
       <el-table-column prop="type" label="类型" width="120" sortable/>
@@ -153,13 +153,12 @@ export default {
           //用于触发页面刷新
           this.getAllData();
         })
+      }).catch(data => {
+        ElMessage({
+          type: 'error',
+          message: `删除失败, ${data.message}`,
+        })
       })
-          .catch(() => {
-            ElMessage({
-              type: 'info',
-              message: 'Delete canceled',
-            })
-          })
     },
 
     // 点击页码触发事件
@@ -186,13 +185,19 @@ export default {
       ).then(() => {
         for (let i = 0; i < data.length; i++) {
           // todo: 需要更改请求方式 更改为发送数组 然后在返回的then里面刷新页面
-          delData(data[i].id);
+          delData(data[i].id).then(() => {
+            ElMessage({
+              type: 'success',
+              message: 'Delete completed',
+            });
+            //用于触发页面刷新
+            this.getAllData();
+          });
         }
-        this.getAllData();
-      }).catch(() => {
+      }).catch(data => {
         ElMessage({
-          type: 'info',
-          message: 'Delete canceled',
+          type: 'error',
+          message: `删除失败, ${data.message}`,
         })
       })
     },

@@ -1,7 +1,7 @@
 let bookData = {
     id: 0,
     isbn: "",
-    tittle: "",
+    title: "",
     price: 0,
     press: "",
     type: "",

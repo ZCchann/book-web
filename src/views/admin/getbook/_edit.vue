@@ -5,8 +5,8 @@
         <el-input v-model="form.isbn"/>
       </el-form-item>
 
-      <el-form-item prop="tittle" label="书名">
-        <el-input v-model="form.tittle"/>
+      <el-form-item prop="title" label="书名">
+        <el-input v-model="form.title"/>
       </el-form-item>
 
       <el-form-item prop="price" label="标价">
@@ -76,7 +76,7 @@ export default {
       form: {
         id: 0,
         isbn: "",
-        tittle: "",
+        title: "",
         price: 0,
         press: "",
         type: "",

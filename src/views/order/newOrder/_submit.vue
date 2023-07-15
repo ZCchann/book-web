@@ -41,7 +41,7 @@
           v-if="active===1"
       >
         <el-table-column prop="isbn" label="ISBN" width="140"/>
-        <el-table-column prop="tittle" label="书名"/>
+        <el-table-column prop="title" label="书名"/>
         <el-table-column prop="price" label="标价" width="80"/>
         <el-table-column prop="press" label="出版社" width="120"/>
         <el-table-column prop="type" label="类型" width="120"/>
