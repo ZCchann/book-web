@@ -131,10 +131,19 @@ export default {
       this.search()
     },
     getAllData() {
-      getAllUser(this.page, this.pageSize).then(data => {
-        this.userDataTable = data.data
-        this.total = data.total
-      })
+      if (this.searchInput !== "") {
+        searchUserData(this.searchInput, this.page, this.pageSize).then(
+            (data) => {
+              this.userDataTable = data.data;
+              this.total = data.total;
+            }
+        )
+      }else {
+        getAllUser(this.page, this.pageSize).then(data => {
+          this.userDataTable = data.data
+          this.total = data.total
+        })
+      }
     },
     tableHandleEdit(row) {
       this.formVisible = true;
@@ -159,8 +168,7 @@ export default {
           //用于触发页面刷新
           this.getAllData();
         })
-      })
-          .catch(() => {
+      }).catch(() => {
             ElMessage({
               type: 'info',
               message: 'Delete canceled',
@@ -200,6 +208,7 @@ export default {
     //搜索
     search() {
       if (this.searchInput === "") {
+        this.currentPage = 1
         this.getAllData()
       } else {
         searchUserData(this.searchInput, this.page, this.pageSize).then(

@@ -92,10 +92,29 @@ export default {
   },
   methods: {
     getAllData() {
-      getAllData(this.page, this.pageSize).then(data => {
-        this.tableData = data.data;
-        this.total = data.total;
-      })
+      if (this.searchInput !== "") {
+        let start;
+        let end;
+        //一个bug 日期选择器清空时 V-model会变为null 需要重新赋值
+        if (this.time == null) {
+          this.time = undefined
+        }
+        if (this.time !== undefined) {
+          start = this.time[0]
+          end = this.time[1]
+        }
+        searchData(this.searchInput, this.page, this.pageSize, start, end).then(
+            (data) => {
+              this.tableData = data.data;
+              this.total = data.total;
+            }
+        )
+      } else {
+        getAllData(this.page, this.pageSize).then(data => {
+          this.tableData = data.data;
+          this.total = data.total;
+        })
+      }
     },
     // 点击页码触发事件
     footerCurrentChange(val) {
@@ -126,6 +145,7 @@ export default {
     },
     search() {
       if (this.searchInput === "") {
+        this.currentPage = 1
         this.getAllData()
       } else {
         searchData(this.searchInput, this.page, this.pageSize).then(
